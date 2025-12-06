@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBAIS - Food Business Intelligence System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #ffffff;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 60px;
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 2.2em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+            flex: 1;
+            margin-left: 60px;
+        }
+
+        .nav-links a {
+            color: #4b5563;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: #2563eb;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            border: 2px solid #2563eb;
+            background: transparent;
+            color: #2563eb;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .nav-btn:hover {
+            background: #f0f7ff;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn-primary {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .nav-btn-primary:hover {
+            background: #1d4ed8;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
+            padding: 100px 60px;
+            text-align: center;
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: 10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            left: 5%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+
+        .hero-icon {
+            font-size: 4.5em;
+            margin-bottom: 30px;
+            animation: slideInDown 0.8s ease-out;
+            color: #2563eb;
+        }
+
+        .hero h1 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            font-weight: 800;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+            line-height: 1.2;
+            color: #0f172a;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3em;
+            margin-bottom: 50px;
+            color: #4b5563;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            line-height: 1.8;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .hero-btn {
+            padding: 16px 45px;
+            font-size: 1.05em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+        }
+
+        .hero-btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .hero-btn-primary:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .hero-btn-secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .hero-btn-secondary:hover {
+            background: #f0f7ff;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 100px 60px;
+            background: #f8fafc;
+        }
+
+        .section-title {
+            font-size: 2.8em;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #0f172a;
+            font-weight: 800;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #4b5563;
+            font-size: 1.1em;
+            margin-bottom: 70px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 45px 35px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            text-align: center;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            animation: fadeInUp 0.8s ease-out both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.1s; }
+        .feature-card:nth-child(2) { animation-delay: 0.2s; }
+        .feature-card:nth-child(3) { animation-delay: 0.3s; }
+        .feature-card:nth-child(4) { animation-delay: 0.4s; }
+        .feature-card:nth-child(5) { animation-delay: 0.5s; }
+        .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+            border-color: #e0f2fe;
+        }
+
+        .feature-icon {
+            font-size: 3.5em;
+            color: #2563eb;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .feature-card h3 {
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            line-height: 1.8;
+            font-size: 0.95em;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 100px 60px;
+            background: white;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 45px 35px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .pricing-card:nth-child(1) { animation-delay: 0.1s; }
+        .pricing-card:nth-child(2) { animation-delay: 0.2s; }
+        .pricing-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .pricing-card.featured {
+            border-color: #2563eb;
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 60px rgba(37, 99, 235, 0.2);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+        }
+
+        .pricing-plan-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .pricing-price {
+            font-size: 2.8em;
+            font-weight: 800;
+            color: #2563eb;
+            margin-bottom: 5px;
+        }
+
+        .pricing-period {
+            color: #64748b;
+            font-size: 0.95em;
+            margin-bottom: 30px;
+        }
+
+        .pricing-description {
+            color: #64748b;
+            font-size: 0.95em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 30px 0;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            color: #4b5563;
+            font-size: 0.95em;
+            border-bottom: 1px solid #f0f7ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li:before {
+            content: '✓';
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .pricing-btn {
+            padding: 14px 32px;
+            border: 2px solid #2563eb;
+            background: transparent;
+            color: #2563eb;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .pricing-card.featured .pricing-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pricing-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .pricing-card.featured .pricing-btn:hover {
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .pricing-card:not(.featured) .pricing-btn:hover {
+            background: #f0f7ff;
+        }
+
+        /* About Section */
+        .about {
+            padding: 100px 60px;
+            background: #f8fafc;
+        }
+
+        .about-header {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 70px;
+            align-items: center;
+        }
+
+        .about-image {
+            text-align: center;
+            animation: slideInLeft 0.8s ease-out;
+        }
+
+        .about-image svg {
+            max-width: 100%;
+            height: auto;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .about-content {
+            animation: slideInRight 0.8s ease-out;
+        }
+
+        .about-content h2 {
+            font-size: 2.8em;
+            margin-bottom: 25px;
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        .about-content p {
+            font-size: 1.05em;
+            color: #4b5563;
+            margin-bottom: 25px;
+            line-height: 1.9;
+        }
+
+        .benefits-list {
+            list-style: none;
+            margin-top: 35px;
+        }
+
+        .benefits-list li {
+            padding: 15px 0;
+            padding-left: 45px;
+            position: relative;
+            font-size: 1.05em;
+            color: #2d3748;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .benefits-list li:hover {
+            padding-left: 55px;
+            color: #2563eb;
+        }
+
+        .benefits-list li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.4em;
+        }
+
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d4ed8 100%);
+            color: white;
+            padding: 80px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta h2 {
+            font-size: 2.8em;
+            margin-bottom: 20px;
+            font-weight: 800;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .cta p {
+            font-size: 1.2em;
+            margin-bottom: 45px;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .cta-btn {
+            padding: 16px 50px;
+            background: white;
+            color: #2563eb;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            background: #f0f7ff;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1f2937 100%);
+            color: #e5e7eb;
+            padding: 50px 60px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 12px 0;
+            font-size: 1em;
+        }
+
+        .footer-highlight {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            nav {
+                padding: 15px 40px;
+            }
+
+            .nav-links {
+                margin-left: 40px;
+                gap: 25px;
+            }
+
+            .hero {
+                padding: 80px 40px;
+                min-height: 70vh;
+            }
+
+            .features {
+                padding: 80px 40px;
+            }
+
+            .pricing {
+                padding: 80px 40px;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .about-container {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .cta {
+                padding: 60px 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 12px 20px;
+                justify-content: space-between;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-buttons {
+                gap: 8px;
+            }
+
+            .hero {
+                padding: 50px 25px;
+                min-height: auto;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero p {
+                font-size: 1.1em;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .hero-btn {
+                width: 100%;
+            }
+
+            .features {
+                padding: 50px 25px;
+            }
+
+            .section-title {
+                font-size: 2.2em;
+            }
+
+            .features-grid {
+                gap: 20px;
+            }
+
+            .about {
+                padding: 50px 25px;
+            }
+
+            .about-content h2 {
+                font-size: 2em;
+            }
+
+            .cta {
+                padding: 40px 25px;
+            }
+
+            .cta h2 {
+                font-size: 2em;
+            }
+
+            footer {
+                padding: 30px 25px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav {
+                padding: 10px 12px;
+            }
+
+            .logo {
+                font-size: 1.4em;
+                gap: 8px;
+            }
+
+            .nav-btn {
+                padding: 8px 16px;
+                font-size: 0.85em;
+            }
+
+            .hero {
+                padding: 40px 15px;
+            }
+
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .hero p {
+                font-size: 0.95em;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+
+            .feature-card {
+                padding: 30px 20px;
+            }
+
+            .about-image {
+                font-size: 4em;
+            }
+
+            .cta h2 {
+                font-size: 1.6em;
+            }
+
+            .cta p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="#" class="logo">
+            <i class="fas fa-chart-bar"></i>
+            FBAIS
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#about">About</a>
+            <a href="#cta">Get Started</a>
+        </div>
+        <div class="nav-buttons">
+            <a href="/signin" class="nav-btn">Sign In</a>
+            <a href="/signup" class="nav-btn nav-btn-primary">Sign Up</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <h1>Intelligence for Your Food Business</h1>
+            <p>Make data-driven decisions with AI-powered analytics, real-time market insights, and predictive intelligence designed for food business owners who want to scale smarter.</p>
+            <div class="hero-buttons">
+                <a href="/signup" class="hero-btn hero-btn-primary">Start Free Trial</a>
+                <a href="/signin" class="hero-btn hero-btn-secondary">Sign In</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="features" id="features">
+        <h2 class="section-title">Seven Powerful Modules in One Platform</h2>
+        <p class="section-subtitle">Everything you need to scale your food business strategically</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <h3>Location Intelligence</h3>
+                <p>Discover the best locations for your restaurant with AI-powered market viability scoring across 50,000+ businesses</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h3>Customer Personas</h3>
+                <p>Understand 7 distinct customer personas with behavior profiles, marketing strategies, and peak time analysis</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Profitability Prediction</h3>
+                <p>Forecast business viability with 93-95% accuracy using ML-based assessment and spatial competitor analysis</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Market Forecasting</h3>
+                <p>Predict demand with real-time weather, Google Trends, and festival calendar integration for informed planning</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Competitor Intelligence</h3>
+                <p>Analyze competitor strategies with interactive India maps and rating/profitability distribution analysis</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-warehouse"></i>
+                </div>
+                <h3>Inventory & Recipes</h3>
+                <p>Optimize operations with 500+ recipe database and intelligent ingredient scaling functionality</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <h3>Waste Tracker</h3>
+                <p>Monitor and minimize food waste with SQLite-based tracking, category breakdown, and detailed analytics</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sparkles"></i>
+                </div>
+                <h3>AI Menu Suggestion</h3>
+                <p>Get intelligent menu recommendations based on trends, customer preferences, and profitability analysis</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="pricing" id="pricing">
+        <h2 class="section-title">Simple, Transparent Pricing</h2>
+        <p class="section-subtitle">Choose the perfect plan for your business needs</p>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3 class="pricing-plan-name">Free</h3>
+                <div class="pricing-price">₹0</div>
+                <div class="pricing-period">Forever free</div>
+                <p class="pricing-description">Perfect for getting started with basic analytics</p>
+                <ul class="pricing-features">
+                    <li>Location Intelligence</li>
+                    <li>Customer Personas (Basic)</li>
+                    <li>Basic Dashboard</li>
+                    <li>Up to 1 location tracking</li>
+                    <li>Monthly Reports</li>
+                    <li>Email Support</li>
+                </ul>
+                <a href="/signup" class="pricing-btn">Get Started Free</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <span class="pricing-badge">Most Popular</span>
+                <h3 class="pricing-plan-name">Premium</h3>
+                <div class="pricing-price">₹4,999</div>
+                <div class="pricing-period">Per month</div>
+                <p class="pricing-description">For growing food businesses ready to scale</p>
+                <ul class="pricing-features">
+                    <li>All Free features</li>
+                    <li>AI Profitability Predictions</li>
+                    <li>Market Forecasting</li>
+                    <li>Competitor Intelligence</li>
+                    <li>Inventory Management</li>
+                    <li>Waste Tracker</li>
+                    <li>AI Menu Suggestions</li>
+                    <li>Up to 5 locations</li>
+                    <li>Weekly Reports</li>
+                    <li>Priority Email Support</li>
+                </ul>
+                <a href="/signup" class="pricing-btn">Start Free Trial</a>
+            </div>
+
+            <div class="pricing-card">
+                <h3 class="pricing-plan-name">Enterprise</h3>
+                <div class="pricing-price">Custom</div>
+                <div class="pricing-period">Get in touch</div>
+                <p class="pricing-description">For large restaurant chains & organizations</p>
+                <ul class="pricing-features">
+                    <li>All Premium features</li>
+                    <li>Unlimited locations</li>
+                    <li>Custom integrations</li>
+                    <li>Real-time Analytics</li>
+                    <li>Advanced API Access</li>
+                    <li>Dedicated Account Manager</li>
+                    <li>24/7 Priority Support</li>
+                    <li>Custom Reports</li>
+                    <li>SLA Guarantee</li>
+                </ul>
+                <a href="mailto:contact@fbais.com" class="pricing-btn">Contact Sales</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="about" id="about">
+        <div class="about-header">
+            <h2 class="section-title">Why Choose FBAIS?</h2>
+            <p class="section-subtitle">Built for Indian food entrepreneurs by entrepreneurs</p>
+        </div>
+        <div class="about-container">
+            <div class="about-image">
+                <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="450" height="450">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Background Circle -->
+                    <circle cx="150" cy="150" r="140" fill="#f0f7ff" opacity="0.5"/>
+                    
+                    <!-- Plate with Food -->
+                    <circle cx="150" cy="130" r="50" fill="url(#grad1)"/>
+                    <circle cx="130" cy="110" r="15" fill="#fff" opacity="0.6"/>
+                    <circle cx="150" cy="100" r="12" fill="#fff" opacity="0.6"/>
+                    <circle cx="170" cy="115" r="14" fill="#fff" opacity="0.6"/>
+                    
+                    <!-- Chart Bar 1 -->
+                    <rect x="60" y="180" width="30" height="70" fill="url(#grad1)" rx="4"/>
+                    <rect x="60" y="175" width="30" height="8" fill="#3b82f6" rx="2"/>
+                    
+                    <!-- Chart Bar 2 -->
+                    <rect x="105" y="160" width="30" height="90" fill="#60a5fa" rx="4"/>
+                    <rect x="105" y="155" width="30" height="8" fill="#3b82f6" rx="2"/>
+                    
+                    <!-- Chart Bar 3 -->
+                    <rect x="150" y="140" width="30" height="110" fill="#3b82f6" rx="4"/>
+                    <rect x="150" y="135" width="30" height="8" fill="#1d4ed8" rx="2"/>
+                    
+                    <!-- Trending Line -->
+                    <polyline points="195,200 210,185 225,195 240,170" 
+                              stroke="#2563eb" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="195" cy="200" r="3" fill="#2563eb"/>
+                    <circle cx="210" cy="185" r="3" fill="#2563eb"/>
+                    <circle cx="225" cy="195" r="3" fill="#2563eb"/>
+                    <circle cx="240" cy="170" r="3" fill="#2563eb"/>
+                    
+                    <!-- Grid Lines -->
+                    <line x1="40" y1="265" x2="260" y2="265" stroke="#e5e7eb" stroke-width="2"/>
+                    <line x1="40" y1="265" x2="40" y2="50" stroke="#e5e7eb" stroke-width="2"/>
+                </svg>
+            </div>
+            <div class="about-content">
+                <h2>Your Competitive Edge</h2>
+                <p>FBAIS (Food Business Analytics & Intelligence System) is a unified platform that consolidates seven powerful analytics modules into one cohesive system designed specifically for Indian food business owners.</p>
+                <p>With access to 50,000+ restaurant data points, 500+ recipes, and demographic data from 28 Indian states, FBAIS empowers you to make informed decisions backed by real data and AI-powered predictions.</p>
+                <ul class="benefits-list">
+                    <li>Unified analytics covering all business aspects</li>
+                    <li>93-95% accuracy ML predictions</li>
+                    <li>Interactive dashboards with real-time data</li>
+                    <li>Support for all business scales</li>
+                    <li>State-specific market insights</li>
+                    <li>Enterprise-grade security & privacy</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta" id="cta">
+        <div class="cta-content">
+            <h2>Ready to Scale Your Food Business?</h2>
+            <p>Join food entrepreneurs who are making smarter decisions with FBAIS intelligence</p>
+            <a href="/signup" class="cta-btn">Get Started Free - No Credit Card Required</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 <span class="footer-highlight">FBAIS</span> - Food Business Analytics & Intelligence System</p>
+        <p>Empowering food entrepreneurs with AI-driven insights and data intelligence</p>
+    </footer>
+</body>
+</html>

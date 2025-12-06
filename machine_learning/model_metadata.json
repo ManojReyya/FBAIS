@@ -1,0 +1,27 @@
+{
+  "model_type": "RandomForestClassifier",
+  "n_estimators": 200,
+  "max_depth": 15,
+  "classes": [
+    "catering_events",
+    "cloud_kitchen",
+    "fast_casual",
+    "fine_dining",
+    "health_organic",
+    "regional_specialty",
+    "street_food"
+  ],
+  "n_classes": 7,
+  "n_features": 7,
+  "feature_names": [
+    "time",
+    "budget_level",
+    "food_type",
+    "occasion",
+    "customer_type",
+    "delivery_preference",
+    "payment_method"
+  ],
+  "training_samples": 10500,
+  "model_version": "1.0"
+}

@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - FBAIS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Left Side */
+        .signin-left {
+            flex: 1;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d4ed8 100%);
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            max-height: 100vh;
+        }
+
+        .signin-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .signin-left::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .signin-left-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .signin-left-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease-out;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+
+        .signin-left-logo:hover {
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .signin-left-logo i {
+            font-size: 2.2em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .signin-left h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .signin-left-description {
+            font-size: 1.02em;
+            opacity: 0.95;
+            margin-bottom: 40px;
+            line-height: 1.7;
+            max-width: 480px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .signin-features {
+            list-style: none;
+        }
+
+        .signin-features li {
+            padding: 18px 0;
+            padding-left: 45px;
+            position: relative;
+            font-size: 0.93em;
+            line-height: 1.6;
+            opacity: 0.9;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .signin-features li:nth-child(1) { animation-delay: 0.3s; }
+        .signin-features li:nth-child(2) { animation-delay: 0.4s; }
+        .signin-features li:nth-child(3) { animation-delay: 0.5s; }
+
+        .signin-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .signin-features strong {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 1em;
+        }
+
+        /* Right Side */
+        .signin-right {
+            flex: 1;
+            background: white;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            z-index: 5;
+            animation: slideUp 0.8s ease-out;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            font-size: 1.8em;
+            color: #0f172a;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .form-header p {
+            color: #64748b;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 13px 45px 13px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: #f8fafc;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .password-field {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #64748b;
+            background: none;
+            border: none;
+            font-size: 1.1em;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .toggle-password:hover {
+            transform: translateY(-50%) scale(1.1);
+            color: #2563eb;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .forgot-password {
+            text-align: right;
+        }
+
+        .forgot-password a {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+            color: #3b82f6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #e5e7eb;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+        }
+
+        .divider span {
+            padding: 0 15px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .toggle-form a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-form a:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            border: 2px solid #fca5a5;
+            color: #991b1b;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.95em;
+            font-weight: 500;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            border: 2px solid #86efac;
+            color: #166534;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.95em;
+            font-weight: 500;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f0f0f0;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            body {
+                flex-direction: column;
+            }
+
+            .signin-left {
+                min-height: 50vh;
+                padding: 40px;
+                justify-content: center;
+            }
+
+            .signin-right {
+                min-height: 50vh;
+                padding: 40px;
+            }
+
+            .signin-left h1 {
+                font-size: 2.2em;
+            }
+
+            .signin-left-description {
+                font-size: 0.95em;
+            }
+
+            .signin-features li {
+                font-size: 0.9em;
+                padding: 15px 0;
+                padding-left: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .signin-left {
+                min-height: auto;
+                padding: 40px 30px;
+            }
+
+            .signin-right {
+                min-height: auto;
+                padding: 40px 30px;
+            }
+
+            .signin-left-logo {
+                margin-bottom: 30px;
+            }
+
+            .signin-left h1 {
+                font-size: 1.8em;
+                margin-bottom: 15px;
+            }
+
+            .signin-left-description {
+                margin-bottom: 30px;
+                font-size: 0.95em;
+            }
+
+            .signin-features li {
+                padding: 12px 0;
+                padding-left: 35px;
+                font-size: 0.9em;
+            }
+
+            .form-container {
+                max-width: 100%;
+            }
+
+            .form-header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .signin-left {
+                padding: 30px 20px;
+            }
+
+            .signin-right {
+                padding: 30px 20px;
+            }
+
+            .signin-left-logo {
+                font-size: 1.3em;
+                margin-bottom: 25px;
+            }
+
+            .signin-left h1 {
+                font-size: 1.5em;
+                margin-bottom: 12px;
+            }
+
+            .signin-left-description {
+                font-size: 0.9em;
+                margin-bottom: 25px;
+            }
+
+            .signin-features li {
+                padding: 10px 0;
+                padding-left: 30px;
+                font-size: 0.85em;
+            }
+
+            .form-container {
+                max-width: 100%;
+            }
+
+            .form-header h1 {
+                font-size: 1.3em;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="password"] {
+                padding: 11px 14px;
+                font-size: 16px;
+            }
+
+            .toggle-password {
+                right: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Side - Marketing Content -->
+    <div class="signin-left">
+        <div class="signin-left-content">
+            <a href="/" class="signin-left-logo">
+                <i class="fas fa-chart-bar"></i>
+                FBAIS
+            </a>
+            
+            <h1>Transform Your Food Business with AI Insights</h1>
+            
+            <p class="signin-left-description">
+                Join thousands of restaurants and food chains using our platform to optimize operations, increase profits, and make data-driven decisions.
+            </p>
+
+            <ul class="signin-features">
+                <li>
+                    <strong>Real-time Analytics</strong>
+                    Monitor sales, inventory, and customer trends in real-time.
+                </li>
+                <li>
+                    <strong>AI-Powered Predictions</strong>
+                    Forecast demand and optimize your menu with machine learning.
+                </li>
+                <li>
+                    <strong>Secure & Reliable</strong>
+                    Enterprise-grade security for your sensitive business data.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Right Side - Sign In Form -->
+    <div class="signin-right">
+        <div class="form-container">
+            <div class="form-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your account to continue</p>
+            </div>
+
+            <div class="error-message" id="loginError"></div>
+            <div class="success-message" id="loginSuccess"></div>
+
+            <form id="loginFormElement" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" name="email" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group password-field">
+                    <label for="loginPassword">Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="loginPassword" name="password" required placeholder="••••••••">
+                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="rememberMe" name="rememberMe">
+                        <label for="rememberMe">Remember me</label>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#">Forgot password?</a>
+                    </div>
+                </div>
+
+                <div class="loading" id="loginLoading">
+                    <div class="spinner"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
+            </form>
+
+            <div class="divider"></div>
+
+            <div class="toggle-form">
+                Don't have an account? <a href="/signup">Create an Account</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = event.target.closest('i');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function showSuccess(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.add('show');
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('.error-message, .success-message').forEach(el => {
+                el.classList.remove('show');
+            });
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            clearMessages();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const loginLoading = document.getElementById('loginLoading');
+
+            loginBtn.disabled = true;
+            loginLoading.style.display = 'block';
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loginLoading.style.display = 'none';
+                loginBtn.disabled = false;
+
+                if (data.success) {
+                    sessionStorage.setItem('user_email', email);
+                    showSuccess('loginSuccess', 'Login successful! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 1500);
+                } else {
+                    showError('loginError', data.error || 'Login failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                loginLoading.style.display = 'none';
+                loginBtn.disabled = false;
+                showError('loginError', 'An error occurred. Please try again.');
+            });
+        }
+
+        document.getElementById('loginFormElement').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleLogin(e);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Personas - Food Business Intelligence</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(37, 99, 235, 0.03);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(37, 99, 235, 0.02);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .container {
+            padding: 40px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 18px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .page-title {
+            color: #333;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .main-content-full {
+            position: relative;
+            z-index: 1;
+        }
+
+        .analyzer-section {
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .analyzer-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .form-column, .result-column {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .form-card, .result-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s ease;
+            border-top: 5px solid #2563eb;
+        }
+
+        .form-card:hover, .result-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-top-color: #3b82f6;
+        }
+
+        .form-card h2 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .form-card h2 i {
+            margin-right: 10px;
+            color: #2563eb;
+        }
+
+        .form-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        label i {
+            color: #2563eb;
+            margin-right: 8px;
+        }
+
+        select, input[type="range"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: white;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input[type="range"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #2563eb;
+        }
+
+        .time-input {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .time-input input[type="range"] {
+            flex: 1;
+        }
+
+        .time-display {
+            min-width: 70px;
+            text-align: center;
+            font-weight: 700;
+            color: #2563eb;
+            font-size: 1.2em;
+            background: #f0f9ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-large {
+            width: 100%;
+            justify-content: center;
+            padding: 16px 28px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 3.5em;
+            color: #2563eb;
+            margin-bottom: 20px;
+            display: block;
+            opacity: 0.7;
+        }
+
+        .empty-state h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            padding: 30px;
+            margin-top: 50px;
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+        }
+
+        .result-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .result-header-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .persona-icon {
+            font-size: 3.5em;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-title-block {
+            flex: 1;
+        }
+
+        .persona-name {
+            color: #333;
+            font-size: 1.6em;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .confidence-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            min-width: 150px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s ease;
+        }
+
+        .confidence-text {
+            font-weight: 700;
+            color: #333;
+            font-size: 0.95em;
+            min-width: 90px;
+        }
+
+        .result-section {
+            padding: 20px 0;
+        }
+
+        .result-section h4 {
+            color: #333;
+            font-size: 1.2em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-section h4 i {
+            color: #2563eb;
+        }
+
+        .reasons-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .reasons-list li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .reasons-list li:before {
+            content: "[+]";
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: 700;
+        }
+
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 3px 10px rgba(37, 99, 235, 0.2);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+
+        .result-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .result-box h5 {
+            color: #333;
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-box h5 i {
+            color: #2563eb;
+        }
+
+        .highlight-text {
+            color: #2563eb;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .strategy-box {
+            background: #f0f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        @media (max-width: 968px) {
+            .analyzer-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .result-header-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            header {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 1.8em;
+            }
+
+            .form-card, .result-card {
+                padding: 25px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1 class="page-title">
+                <i class="fas fa-users"></i> Customer Personas
+            </h1>
+            <p class="page-subtitle">Identify your customer type and get India-specific business recommendations</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content-full">
+            <section class="analyzer-section">
+                <div class="analyzer-wrapper">
+                    <!-- Form Column -->
+                    <div class="form-column">
+                        <div class="form-card">
+                            <h2><i class="fas fa-search"></i> Analyze Your Customer</h2>
+                            <p class="form-subtitle">Fill in customer details to identify their profile</p>
+                            
+                            <!-- Time -->
+                            <div class="form-group">
+                                <label for="currentTime">
+                                    <i class="fas fa-clock"></i> Current Time (Hour)
+                                </label>
+                                <div class="time-input">
+                                    <input type="range" id="currentTime" min="0" max="23" value="12">
+                                    <span class="time-display" id="timeDisplay">12:00</span>
+                                </div>
+                            </div>
+
+                            <!-- Budget Level -->
+                            <div class="form-group">
+                                <label for="budgetLevel">
+                                    <i class="fas fa-wallet"></i> Budget Level
+                                </label>
+                                <select id="budgetLevel">
+                                    <option value="">-- Select Budget --</option>
+                                    <option value="low">Low (₹50-150)</option>
+                                    <option value="medium" selected>Medium (₹200-500)</option>
+                                    <option value="high">High (₹1000+)</option>
+                                </select>
+                            </div>
+
+                            <!-- Food Type Preference -->
+                            <div class="form-group">
+                                <label for="foodType">
+                                    <i class="fas fa-hamburger"></i> Food Type Preference
+                                </label>
+                                <select id="foodType">
+                                    <option value="">-- Select Preference --</option>
+                                    <option value="street_food">Street Food & Quick Bites</option>
+                                    <option value="home_delivery">Home Delivery (App-based)</option>
+                                    <option value="dine_in">Dine-in Restaurant</option>
+                                    <option value="catering">Bulk Catering & Events</option>
+                                    <option value="health_conscious">Health-Conscious/Organic</option>
+                                </select>
+                            </div>
+
+                            <!-- Occasion -->
+                            <div class="form-group">
+                                <label for="occasion">
+                                    <i class="fas fa-calendar-alt"></i> Occasion
+                                </label>
+                                <select id="occasion">
+                                    <option value="">-- Select Occasion --</option>
+                                    <option value="daily_meal" selected>Daily Meal</option>
+                                    <option value="casual_outing">Casual Outing</option>
+                                    <option value="celebration">Celebration/Anniversary</option>
+                                    <option value="event">Event/Wedding Catering</option>
+                                </select>
+                            </div>
+
+                            <!-- Customer Type -->
+                            <div class="form-group">
+                                <label for="customerType">
+                                    <i class="fas fa-user"></i> Customer Type
+                                </label>
+                                <select id="customerType">
+                                    <option value="">-- Select Type --</option>
+                                    <option value="student">Student</option>
+                                    <option value="working_professional" selected>Working Professional</option>
+                                    <option value="family">Family</option>
+                                    <option value="food_enthusiast">Food Enthusiast</option>
+                                    <option value="event_planner">Event Planner</option>
+                                </select>
+                            </div>
+
+                            <!-- Delivery Preference -->
+                            <div class="form-group">
+                                <label for="deliveryPref">
+                                    <i class="fas fa-truck"></i> Delivery Preference
+                                </label>
+                                <select id="deliveryPref">
+                                    <option value="">-- Select Preference --</option>
+                                    <option value="app_delivery" selected>App Delivery (Zomato/Swiggy)</option>
+                                    <option value="self_pickup">Self Pickup</option>
+                                    <option value="no_delivery">No Delivery (Dine-in)</option>
+                                </select>
+                            </div>
+
+                            <!-- Payment Method -->
+                            <div class="form-group">
+                                <label for="paymentMethod">
+                                    <i class="fas fa-credit-card"></i> Payment Method
+                                </label>
+                                <select id="paymentMethod">
+                                    <option value="">-- Select Method --</option>
+                                    <option value="upi">UPI/Digital</option>
+                                    <option value="cash" selected>Cash</option>
+                                    <option value="card">Card</option>
+                                    <option value="online_transfer">Online Transfer</option>
+                                </select>
+                            </div>
+
+                            <!-- Analyze Button -->
+                            <button class="btn btn-primary btn-large" onclick="analyzeCustomer()">
+                                <i class="fas fa-search"></i> Analyze Customer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Results Column -->
+                    <div class="result-column">
+                        <div class="result-card" id="analyzerResult">
+                            <div class="empty-state">
+                                <i class="fas fa-chart-pie"></i>
+                                <h3>Analysis Results</h3>
+                                <p>Fill the form and click "Analyze Customer" to get detailed insights</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p><i class="fas fa-utensils"></i> Food Business Intelligence System | Customer Personas v2.0 with ML</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        document.getElementById('currentTime').addEventListener('input', function() {
+            const hour = parseInt(this.value);
+            const timeDisplay = document.getElementById('timeDisplay');
+            const minutes = Math.floor((hour % 1) * 60);
+            timeDisplay.textContent = `${hour}:${minutes.toString().padStart(2, '0')}`;
+        });
+    </script>
+</body>
+</html>

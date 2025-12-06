@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Ingredient Calculator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        navbar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-menu a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #2563eb;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 60px;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero-section h1 {
+            font-size: 3em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .hero-section p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px 60px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: #3b82f6;
+            font-size: 1.4em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 0.95em;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 350px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f1f5f9;
+            color: #475569;
+            font-size: 0.9em;
+        }
+
+        .dropdown-item:hover {
+            background: #f0f9ff;
+            padding-left: 20px;
+            color: #3b82f6;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        input[type="number"] {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 0.95em;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 0.95em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .ingredients-section {
+            display: none;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .ingredients-section.active {
+            display: block;
+        }
+
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .ingredient-item {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            padding: 18px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .ingredient-item:hover {
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .ingredient-icon {
+            font-size: 1.8em;
+            min-width: 45px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .ingredient-text {
+            flex: 1;
+            font-size: 0.9em;
+            color: #1e293b;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #7f1d1d;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: none;
+            border-left: 4px solid #ef4444;
+            font-weight: 500;
+            font-size: 0.9em;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .error.active {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .no-results {
+            padding: 16px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9em;
+            background: #f8fafc;
+        }
+
+        .recipe-details {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .recipe-details.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px;
+            }
+
+            .hero-section h1 {
+                font-size: 2em;
+            }
+
+            .hero-section p {
+                font-size: 0.95em;
+            }
+
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .ingredients-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content-wrapper {
+                padding: 0 20px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navbar>
+        <div class="navbar-content">
+            <a href="/dashboard" class="navbar-logo">
+                <i class="fas fa-leaf"></i> FBAIS
+            </a>
+            <div class="navbar-menu">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/demand-forecast">Demand Forecast</a>
+                <a href="/profile">Profile</a>
+                <a href="/upgrade">Upgrade</a>
+                <a href="/help">Help</a>
+            </div>
+            <div class="navbar-user">
+                <span style="color: #475569; font-weight: 600;">{{ user_name if user_name else 'User' }}</span>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </navbar>
+
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1><i class="fas fa-utensils"></i> Recipe Ingredient Calculator</h1>
+            <p>Scale your Indian recipes perfectly - choose servings and get exact measurements</p>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div id="errorMessage" class="error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <div class="main-grid">
+            <!-- Left Card: Recipe Selection -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-book"></i> Select Recipe
+                </div>
+                
+                <div class="form-group">
+                    <label for="recipeSearch">Choose from 6,800+ Recipes</label>
+                    <div class="search-container">
+                        <input
+                            type="text"
+                            id="recipeSearch"
+                            class="search-input"
+                            placeholder="Search recipes..."
+                            autocomplete="off"
+                        >
+                        <div class="dropdown-menu" id="recipeDropdown"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Card: Servings & Results -->
+            <div class="card recipe-details" id="recipeDetailsCard">
+                <div class="card-title">
+                    <i class="fas fa-sliders-h"></i> Adjust Servings
+                </div>
+
+                <div class="form-group">
+                    <label for="servings">Number of Servings</label>
+                    <div class="input-group">
+                        <input
+                            type="number"
+                            id="servings"
+                            min="1"
+                            value="1"
+                            placeholder="Enter servings"
+                        >
+                        <button class="btn btn-primary" onclick="scaleIngredients()">
+                            <i class="fas fa-calculator"></i> Calculate
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ingredients Section -->
+        <div class="ingredients-section" id="ingredientsSection">
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-list"></i> Scaled Ingredients
+                </div>
+                <div class="ingredients-grid" id="ingredientList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allRecipes = [];
+        let selectedRecipe = null;
+
+        const ingredientIcons = {
+            'rice': '🍚', 'basmati': '🍚', 'flour': '🌾', 'wheat': '🌾',
+            'tomato': '🍅', 'onion': '🧅', 'garlic': '🧄', 'ginger': '🫚',
+            'chilli': '🌶️', 'pepper': '🫑', 'carrot': '🥕', 'potato': '🥔',
+            'broccoli': '🥦', 'spinach': '🥬', 'cabbage': '🥬', 'lettuce': '🥬',
+            'cucumber': '🥒', 'eggplant': '🍆', 'okra': '🥜', 'beans': '🫘',
+            'lentil': '🫘', 'chickpea': '🫘', 'peas': '🫛', 'pea': '🫛',
+            'milk': '🥛', 'yogurt': '🥛', 'cream': '🥛', 'paneer': '🧀', 'cheese': '🧀',
+            'butter': '🧈', 'oil': '🫗', 'ghee': '🫗',
+            'salt': '🧂', 'sugar': '🍯', 'honey': '🍯', 'gur': '🍯',
+            'spice': '✨', 'turmeric': '✨', 'cumin': '✨', 'coriander': '✨',
+            'mustard': '✨', 'fenugreek': '✨', 'cardamom': '✨', 'clove': '✨',
+            'cinnamon': '✨', 'bay': '🍃', 'mint': '🍃', 'cilantro': '🍃',
+            'parsley': '🍃', 'coconut': '🥥', 'tamarind': '🌰', 'date': '🌰',
+            'almond': '🌰', 'cashew': '🌰', 'peanut': '🥜', 'sesame': '🌾',
+            'chicken': '🍗', 'mutton': '🍖', 'beef': '🍖', 'fish': '🐟',
+            'prawn': '🦐', 'egg': '🥚', 'bread': '🍞', 'naan': '🍞',
+            'dal': '🫘', 'water': '💧', 'lime': '🍋', 'lemon': '🍋'
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecipes();
+            setupRecipeSearch();
+        });
+
+        function getIconForIngredient(ingredient) {
+            const ingredientLower = ingredient.toLowerCase();
+            for (const [key, icon] of Object.entries(ingredientIcons)) {
+                if (ingredientLower.includes(key)) {
+                    return icon;
+                }
+            }
+            return '📦';
+        }
+
+        function loadRecipes() {
+            fetch('/api/recipes')
+                .then(response => response.json())
+                .then(recipes => {
+                    allRecipes = recipes;
+                })
+                .catch(error => {
+                    console.error('Error loading recipes:', error);
+                    showError('Failed to load recipes');
+                });
+        }
+
+        function setupRecipeSearch() {
+            const searchInput = document.getElementById('recipeSearch');
+            const dropdown = document.getElementById('recipeDropdown');
+
+            searchInput.addEventListener('focus', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                displayRecipeDropdown(searchTerm);
+            });
+
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                displayRecipeDropdown(searchTerm);
+            });
+
+            document.addEventListener('click', function(e) {
+                if (e.target !== searchInput && e.target !== dropdown) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+
+        function displayRecipeDropdown(searchTerm) {
+            const dropdown = document.getElementById('recipeDropdown');
+            
+            let filtered = allRecipes;
+            if (searchTerm.length > 0) {
+                filtered = allRecipes.filter(recipe =>
+                    recipe.toLowerCase().includes(searchTerm)
+                );
+            }
+
+            if (filtered.length === 0) {
+                dropdown.innerHTML = '<div class="no-results">No recipes found</div>';
+                dropdown.classList.add('active');
+                return;
+            }
+
+            dropdown.innerHTML = filtered.slice(0, 15).map(recipe => `
+                <div class="dropdown-item" onclick="selectRecipe('${recipe.replace(/'/g, "\\'")}')">
+                    ${recipe}
+                </div>
+            `).join('');
+
+            dropdown.classList.add('active');
+        }
+
+        function selectRecipe(recipeName) {
+            selectedRecipe = recipeName;
+            document.getElementById('recipeSearch').value = recipeName;
+            document.getElementById('recipeDropdown').classList.remove('active');
+            document.getElementById('recipeDetailsCard').classList.add('active');
+            document.getElementById('recipeEmpty').style.display = 'none';
+            document.getElementById('ingredientsSection').classList.remove('active');
+
+            loadRecipeDetails(recipeName);
+        }
+
+        function loadRecipeDetails(recipeName) {
+            fetch(`/api/recipe-details/${encodeURIComponent(recipeName)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('servings').value = data.originalServings;
+                })
+                .catch(error => {
+                    console.error('Error loading recipe details:', error);
+                    showError('Failed to load recipe details');
+                });
+        }
+
+        function scaleIngredients() {
+            if (!selectedRecipe) {
+                showError('Please select a recipe first');
+                return;
+            }
+
+            const servings = parseInt(document.getElementById('servings').value);
+            if (isNaN(servings) || servings < 1) {
+                showError('Please enter a valid number of servings');
+                return;
+            }
+
+            fetch(`/api/recipe-details/${encodeURIComponent(selectedRecipe)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch recipe details`);
+                    }
+                    return response.json();
+                })
+                .then(recipe => {
+                    return fetch('/api/scale-ingredients', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            ingredients: recipe.ingredients,
+                            originalServings: recipe.originalServings,
+                            targetServings: servings
+                        })
+                    });
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to scale ingredients`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    displayScaledIngredients(data.scaledIngredients);
+                    document.getElementById('ingredientsSection').classList.add('active');
+                })
+                .catch(error => {
+                    console.error('Error scaling ingredients:', error);
+                    showError('Failed to scale ingredients');
+                });
+        }
+
+        function displayScaledIngredients(ingredients) {
+            const ingredientList = document.getElementById('ingredientList');
+
+            ingredientList.innerHTML = ingredients.map((ingredient) => `
+                <div class="ingredient-item">
+                    <span class="ingredient-icon">${getIconForIngredient(ingredient)}</span>
+                    <span class="ingredient-text">${ingredient}</span>
+                </div>
+            `).join('');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('error-text');
+            errorText.textContent = message;
+            errorDiv.classList.add('active');
+            setTimeout(() => {
+                errorDiv.classList.remove('active');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

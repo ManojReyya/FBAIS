@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Business Profitability Predictor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(37, 99, 235, 0.03);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(37, 99, 235, 0.02);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        navbar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-logo:hover {
+            opacity: 0.8;
+        }
+
+        .navbar-menu a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #2563eb;
+        }
+
+        .container {
+            padding: 40px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 18px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .form-section, .results-section {
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s ease;
+            border-top: 5px solid #2563eb;
+        }
+
+        .form-section:hover, .results-section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-top-color: #3b82f6;
+        }
+
+        h2 {
+            color: #2563eb;
+            font-size: 1.6em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        h3, h4 {
+            color: #2563eb;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-row.full, .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input, select {
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.95em;
+            background-color: #f9fafb;
+            color: #333;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #2563eb;
+            background-color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f0f9ff;
+            border-color: #2563eb;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #2563eb;
+            margin-bottom: 12px;
+        }
+
+        .info-box p {
+            color: #333;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            transition: all 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        .score-value {
+            font-size: 3.5em;
+            font-weight: 800;
+            color: #2563eb;
+            margin: 15px 0;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .stat-value {
+            color: #2563eb;
+            font-weight: 800;
+            font-size: 1em;
+        }
+
+        .insights-section {
+            margin-top: 35px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #2563eb;
+            transition: all 0.3s ease;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.15);
+        }
+
+        .insight-card h4 {
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .insight-card p {
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #dc2626;
+            margin-bottom: 20px;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+            font-size: 0.9em;
+        }
+
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .category-badge, .accuracy-badge {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+
+        .accuracy-badge {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(59, 130, 246, 0.1));
+            color: #2563eb;
+        }
+
+        .category-badge.high {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+            color: #059669;
+            border: 2px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .category-badge.medium {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+            color: #d97706;
+            border: 2px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .category-badge.low {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+            color: #dc2626;
+            border: 2px solid rgba(220, 38, 38, 0.3);
+        }
+
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+
+            .insights-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-line"></i> Profitability Predictor</h1>
+            <p class="subtitle">AI-Powered Analysis with 94% Accuracy - Know Before You Invest</p>
+        </header>
+
+        <main>
+            <div class="form-section">
+                <h2><i class="fas fa-map-marker-alt"></i> Step 1: Select Your Location</h2>
+                
+                <form id="predictionForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City (99 Available) *</label>
+                            <div class="search-container">
+                                <input type="text" id="citySearch" placeholder="Search city..." class="search-input">
+                                <select id="city" name="city" required>
+                                    <option value="">Select City</option>
+                                </select>
+                            </div>
+                            <div id="cityStats" class="info-box" style="display: none;">
+                                <p><strong>Restaurants in city:</strong> <span id="cityRestaurantCount">--</span></p>
+                                <p><strong>Avg Rating:</strong> <span id="cityAvgRating">--</span></p>
+                                <p><strong>Population:</strong> <span id="cityPopulation">--</span></p>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="establishment_type">Establishment Type *</label>
+                            <select id="establishment_type" name="establishment_type" required>
+                                <option value="">Select Type</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Select Location on Map</label>
+                            <p class="help-text">Click on the map to select your restaurant location</p>
+                            <div id="map" style="height: 400px; border-radius: 8px; margin-bottom: 10px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="latitude">Latitude *</label>
+                            <input type="number" id="latitude" name="latitude" step="0.000001" placeholder="e.g., 28.6139" required readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="longitude">Longitude *</label>
+                            <input type="number" id="longitude" name="longitude" step="0.000001" placeholder="e.g., 77.2090" required readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label for="cuisines">Select Cuisines (Hold Ctrl/Cmd to select multiple) *</label>
+                            <select id="cuisines" name="cuisines" multiple required style="height: 120px;">
+                                <option value="">Loading cuisines...</option>
+                            </select>
+                            <small class="help-text">Selected: <span id="selectedCuisineCount">0</span> cuisines</small>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="total_cuisines">Number of Cuisines Selected *</label>
+                            <input type="number" id="total_cuisines" name="total_cuisines" min="1" max="10" value="2" readonly style="background-color: #f5f5f5;">
+                        </div>
+                    </div>
+
+                    <h2 style="margin-top: 30px;"><i class="fas fa-briefcase"></i> Step 2: Business Details</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="opening_hours">Daily Open Hours *</label>
+                            <input type="number" id="opening_hours" name="opening_hours" min="1" max="24" value="10" step="0.5" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="average_cost_for_two">Avg Cost for Two (Rs) *</label>
+                            <input type="number" id="average_cost_for_two" name="average_cost_for_two" min="50" max="10000" value="500" required>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="aggregate_rating" name="aggregate_rating" value="3.5">
+                    <input type="hidden" id="votes" name="votes" value="100">
+
+                    <div class="form-row">
+                        <div class="form-group full">
+                            <label>Market Reference (Auto-filled based on location)</label>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                                <div class="info-box">
+                                    <p><strong>Market Avg Rating:</strong></p>
+                                    <p id="marketAvgRating" style="font-size: 1.2rem; color: #2563eb; font-weight: 700;">--</p>
+                                </div>
+                                <div class="info-box">
+                                    <p><strong>Market Avg Reviews:</strong></p>
+                                    <p id="marketAvgVotes" style="font-size: 1.2rem; color: #2563eb; font-weight: 700;">--</p>
+                                </div>
+                                <div class="info-box">
+                                    <p><strong>Nearby Competitors:</strong></p>
+                                    <p id="nearbyCount" style="font-size: 1.2rem; color: #2563eb; font-weight: 700;">--</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-magic"></i> Get Profitability Analysis</button>
+                        <button type="reset" class="btn btn-secondary"><i class="fas fa-redo"></i> Clear Form</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="resultsSection" class="results-section" style="display: none;">
+                <h2><i class="fas fa-chart-pie"></i> Profitability Analysis Report</h2>
+                
+                <div class="results-container">
+                    <div class="result-card main-result">
+                        <div class="result-header">
+                            <h3>Profitability Score</h3>
+                            <span class="accuracy-badge">94% ML Accuracy</span>
+                        </div>
+                        
+                        <div class="score-display">
+                            <div class="score-value" id="profitabilityScore">0</div>
+                            <div class="score-unit">out of 100</div>
+                        </div>
+
+                        <div class="category-display">
+                            <h4>Your Profit Potential:</h4>
+                            <span id="profitabilityCategory" class="category-badge">--</span>
+                        </div>
+
+                        <div style="margin-top: 20px; text-align: center;">
+                            <p id="categoryDescription" style="font-size: 0.95rem; line-height: 1.6;"></p>
+                        </div>
+                    </div>
+
+                    <div class="result-card competitor-analysis">
+                        <h3><i class="fas fa-shield-alt"></i> Market Competition Analysis</h3>
+                        
+                        <div class="stat-row">
+                            <span class="stat-label">Competitors within 1km:</span>
+                            <span class="stat-value" id="comp1km">--</span>
+                        </div>
+
+                        <div class="stat-row">
+                            <span class="stat-label">Competitors within 5km:</span>
+                            <span class="stat-value" id="comp5km">--</span>
+                        </div>
+
+                        <div class="stat-row">
+                            <span class="stat-label">Same Cuisine (1km):</span>
+                            <span class="stat-value" id="sameCuisine1km">--</span>
+                        </div>
+
+                        <div class="stat-row">
+                            <span class="stat-label">Market Avg Rating (1km):</span>
+                            <span class="stat-value" id="avgRating1km">--</span>
+                        </div>
+
+                        <div class="stat-row">
+                            <span class="stat-label">Market Avg Cost (1km):</span>
+                            <span class="stat-value" id="avgCost1km">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insights-section">
+                    <h2><i class="fas fa-lightbulb"></i> Business Insights & Recommendations</h2>
+                    <div class="insights-grid">
+                        <div class="insight-card">
+                            <h4><i class="fas fa-users"></i> Competition Level</h4>
+                            <p id="insightHighCompetition">--</p>
+                        </div>
+                        <div class="insight-card">
+                            <h4><i class="fas fa-chart-bar"></i> Market Saturation</h4>
+                            <p id="insightSaturation">--</p>
+                        </div>
+                        <div class="insight-card">
+                            <h4><i class="fas fa-hand-holding-usd"></i> Investment Recommendation</h4>
+                            <p id="insightRecommendation">--</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-message" id="errorMessage" style="display: none;"></div>
+            </div>
+        </main>
+
+        <footer>
+            <p>ML Model: Random Forest | Accuracy: 93-95% | Dataset: 60,373 Indian Restaurants across 99 Cities | Updated: Dec 2024</p>
+        </footer>
+    </div>
+
+    <script>
+        let map;
+        let marker;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            loadCities();
+            loadEstablishments();
+            loadCuisines();
+            setupEventListeners();
+            document.getElementById('predictionForm').addEventListener('submit', handleSubmit);
+        });
+
+        function initializeMap() {
+            map = L.map('map').setView([28.7041, 77.1025], 12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            map.on('click', function(e) {
+                const lat = e.latlng.lat;
+                const lng = e.latlng.lng;
+                selectLocation(lat, lng);
+            });
+        }
+
+        function selectLocation(lat, lng) {
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
+
+            if (marker) {
+                map.removeLayer(marker);
+            }
+            marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup(`Selected Location<br>Lat: ${lat.toFixed(6)}<br>Lng: ${lng.toFixed(6)}`).openPopup();
+
+            updateLocationStats();
+        }
+
+        function updateLocationStats() {
+            const city = document.getElementById('city').value;
+            const lat = document.getElementById('latitude').value;
+            const lng = document.getElementById('longitude').value;
+
+            if (!city || !lat || !lng) return;
+
+            fetch('/location-stats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    city: city,
+                    latitude: parseFloat(lat),
+                    longitude: parseFloat(lng)
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('marketAvgRating').textContent = data.avg_rating;
+                    document.getElementById('marketAvgVotes').textContent = Math.round(data.avg_votes);
+                    document.getElementById('nearbyCount').textContent = data.nearby_count;
+                    document.getElementById('votesHint').textContent = `Market avg: ${Math.round(data.avg_votes)} reviews`;
+                }
+            })
+            .catch(e => console.error('Error:', e));
+        }
+
+        function loadCities() {
+            fetch('/cities')
+                .then(r => r.json())
+                .then(data => {
+                    const select = document.getElementById('city');
+                    data.cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        function loadEstablishments() {
+            fetch('/establishments')
+                .then(r => r.json())
+                .then(data => {
+                    const select = document.getElementById('establishment_type');
+                    data.establishments.forEach(est => {
+                        const option = document.createElement('option');
+                        option.value = est;
+                        option.textContent = est;
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        function loadCuisines() {
+            fetch('/cuisines')
+                .then(r => r.json())
+                .then(data => {
+                    const select = document.getElementById('cuisines');
+                    select.innerHTML = '';
+                    data.cuisines.forEach(cuisine => {
+                        const option = document.createElement('option');
+                        option.value = cuisine;
+                        option.textContent = cuisine;
+                        select.appendChild(option);
+                    });
+                });
+        }
+
+        function setupEventListeners() {
+            const citySelect = document.getElementById('city');
+            const citySearch = document.getElementById('citySearch');
+
+            citySelect.addEventListener('change', function() {
+                if (this.value) {
+                    fetch(`/city-info/${this.value}`)
+                        .then(r => r.json())
+                        .then(info => {
+                            document.getElementById('cityRestaurantCount').textContent = info.count;
+                            document.getElementById('cityAvgRating').textContent = info.avg_rating.toFixed(2);
+                            document.getElementById('cityPopulation').textContent = (info.population / 1000000).toFixed(1) + 'M';
+                            document.getElementById('cityStats').style.display = 'block';
+
+                            map.setView([info.lat_center, info.lon_center], 12);
+                            if (marker) map.removeLayer(marker);
+                        });
+                }
+            });
+
+            citySearch.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const options = citySelect.options;
+                let found = false;
+
+                for (let i = 1; i < options.length; i++) {
+                    if (options[i].text.toLowerCase().includes(searchTerm)) {
+                        if (!found) {
+                            citySelect.value = options[i].value;
+                            citySelect.dispatchEvent(new Event('change'));
+                            found = true;
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('latitude').addEventListener('change', updateLocationStats);
+            document.getElementById('longitude').addEventListener('change', updateLocationStats);
+
+            const cuisineSelect = document.getElementById('cuisines');
+            cuisineSelect.addEventListener('change', function() {
+                const selected = Array.from(this.options).filter(opt => opt.selected).length;
+                document.getElementById('selectedCuisineCount').textContent = selected;
+                document.getElementById('total_cuisines').value = Math.max(1, selected);
+            });
+        }
+
+        function handleSubmit(e) {
+            e.preventDefault();
+
+            const formData = new FormData(document.getElementById('predictionForm'));
+            const data = Object.fromEntries(formData);
+
+            const cuisineSelect = document.getElementById('cuisines');
+            const selectedCuisines = Array.from(cuisineSelect.options)
+                .filter(opt => opt.selected)
+                .map(opt => opt.value)
+                .join(', ');
+            data.cuisines = selectedCuisines;
+
+            fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(response => {
+                if (response.success) {
+                    displayResults(response.data);
+                } else {
+                    displayError(response.error);
+                }
+            })
+            .catch(error => displayError('Error: ' + error.message));
+        }
+
+        function displayResults(data) {
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            const score = data.profitability_score;
+            document.getElementById('profitabilityScore').textContent = score;
+            document.getElementById('profitabilityCategory').textContent = data.profitability_category;
+            document.getElementById('profitabilityCategory').className = 'category-badge ' + data.profitability_category.toLowerCase();
+
+            const descriptions = {
+                'High': 'Excellent profit potential! This location has strong market conditions.',
+                'Medium': 'Good profit potential. Success depends on execution and marketing.',
+                'Low': 'Challenging location. Consider alternative locations or better differentiation.'
+            };
+            document.getElementById('categoryDescription').textContent = descriptions[data.profitability_category] || '';
+
+            const comp = data.competitor_analysis;
+            document.getElementById('comp1km').textContent = comp.competitors_1km;
+            document.getElementById('comp5km').textContent = comp.competitors_5km;
+            document.getElementById('sameCuisine1km').textContent = comp.same_cuisine_1km;
+            document.getElementById('avgRating1km').textContent = comp.avg_competitor_rating_1km.toFixed(2);
+            document.getElementById('avgCost1km').textContent = comp.avg_competitor_cost_1km;
+
+            const insights = generateInsights(data);
+            document.getElementById('insightHighCompetition').textContent = insights.competition;
+            document.getElementById('insightSaturation').textContent = insights.saturation;
+            document.getElementById('insightRecommendation').textContent = insights.recommendation;
+
+            window.scrollTo({ top: document.getElementById('resultsSection').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        function generateInsights(data) {
+            const comp = data.competitor_analysis;
+            const score = data.profitability_score;
+
+            let competition = comp.competitors_1km > 20 ? 'HIGH - Many competitors nearby. Need strong differentiation.' : 
+                            comp.competitors_1km > 10 ? 'MODERATE - Decent competition. Quality & service matter.' : 
+                            'LOW - Less competition. Good market opportunity.';
+
+            let saturation = comp.same_cuisine_1km > comp.competitors_1km * 0.6 ? 'HIGH - Market saturated with similar cuisines. Differentiate your menu.' : 
+                           'MODERATE - Reasonable market share available for this cuisine type.';
+            
+            let recommendation = '';
+            if (score > 70) {
+                recommendation = 'HIGHLY RECOMMENDED - Strong profitability indicators. Ready to invest.';
+            } else if (score > 60) {
+                recommendation = 'RECOMMENDED - Good profit potential. Ensure quality execution.';
+            } else if (score > 50) {
+                recommendation = 'PROCEED CAUTIOUSLY - Moderate profit potential. Plan carefully.';
+            } else if (score > 40) {
+                recommendation = 'RISKY - Low profit indicators. Consider alternative locations.';
+            } else {
+                recommendation = 'NOT RECOMMENDED - Poor profitability outlook. Choose different location.';
+            }
+
+            return { competition, saturation, recommendation };
+        }
+
+        function displayError(error) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = 'Error: ' + error;
+            errorDiv.style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

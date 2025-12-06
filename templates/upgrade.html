@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upgrade Plan - FBAIS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        navbar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-menu a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #2563eb;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+            font-size: 0.9em;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #0f172a;
+            font-weight: 800;
+            animation: fadeInDown 0.8s ease-out;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #4b5563;
+            font-size: 1.1em;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+            margin-bottom: 40px;
+        }
+
+        .pricing-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 45px 35px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .pricing-card:nth-child(1) { animation-delay: 0.1s; }
+        .pricing-card:nth-child(2) { animation-delay: 0.2s; }
+        .pricing-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .pricing-card.featured {
+            border-color: #2563eb;
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.15);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05);
+            box-shadow: 0 25px 60px rgba(37, 99, 235, 0.2);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+        }
+
+        .pricing-plan-name {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .pricing-price {
+            font-size: 2.8em;
+            font-weight: 800;
+            color: #2563eb;
+            margin-bottom: 5px;
+        }
+
+        .pricing-period {
+            color: #64748b;
+            font-size: 0.95em;
+            margin-bottom: 30px;
+        }
+
+        .pricing-description {
+            color: #64748b;
+            font-size: 0.95em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 30px 0;
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 12px 0;
+            color: #4b5563;
+            font-size: 0.95em;
+            border-bottom: 1px solid #f0f7ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li:before {
+            content: '✓';
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .pricing-btn {
+            padding: 14px 32px;
+            border: 2px solid #2563eb;
+            background: transparent;
+            color: #2563eb;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .pricing-card.featured .pricing-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pricing-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .pricing-card.featured .pricing-btn:hover {
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .pricing-card:not(.featured) .pricing-btn:hover {
+            background: #f0f7ff;
+        }
+
+        .comparison-section {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            margin-top: 50px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .comparison-section h2 {
+            font-size: 2em;
+            color: #0f172a;
+            margin-bottom: 35px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .comparison-table th {
+            background: #f8fafc;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: #0f172a;
+            width: 40%;
+        }
+
+        .check-icon {
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .faq-section {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+
+        .faq-section h2 {
+            font-size: 2em;
+            color: #0f172a;
+            margin-bottom: 35px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+        }
+
+        .faq-question {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #0f172a;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background: #e0f2fe;
+        }
+
+        .faq-answer {
+            display: none;
+            padding: 20px;
+            background: white;
+            border-left: 4px solid #2563eb;
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .faq-answer.show {
+            display: block;
+        }
+
+        @media (max-width: 1024px) {
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+
+            .navbar-content {
+                padding: 12px 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                padding: 12px 20px;
+                flex-wrap: wrap;
+            }
+
+            .navbar-menu {
+                display: none;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .pricing-grid {
+                gap: 20px;
+            }
+
+            .comparison-section,
+            .faq-section {
+                padding: 30px 20px;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 12px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navbar>
+        <div class="navbar-content">
+            <a href="/dashboard" class="navbar-logo">
+                <i class="fas fa-chart-bar"></i>
+                FBAIS
+            </a>
+            <div class="navbar-menu">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/demand-forecast">Demand Forecast</a>
+                <a href="/profile">Profile</a>
+                <a href="/upgrade">Upgrade</a>
+            </div>
+            <div class="navbar-user">
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </navbar>
+
+    <div class="container">
+        <h1><i class="fas fa-crown"></i> Choose Your Plan</h1>
+        <p class="subtitle">Unlock powerful features to scale your food business</p>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3 class="pricing-plan-name">Free</h3>
+                <div class="pricing-price">₹0</div>
+                <div class="pricing-period">Forever free</div>
+                <p class="pricing-description">Perfect for getting started with basic analytics</p>
+                <ul class="pricing-features">
+                    <li>Location Intelligence</li>
+                    <li>Customer Personas (Basic)</li>
+                    <li>Basic Dashboard</li>
+                    <li>Up to 1 location tracking</li>
+                    <li>Monthly Reports</li>
+                    <li>Email Support</li>
+                </ul>
+                <button class="pricing-btn" onclick="alert('You are already on the Free plan!')">Current Plan</button>
+            </div>
+
+            <div class="pricing-card featured">
+                <span class="pricing-badge">Most Popular</span>
+                <h3 class="pricing-plan-name">Premium</h3>
+                <div class="pricing-price">₹4,999</div>
+                <div class="pricing-period">Per month</div>
+                <p class="pricing-description">For growing food businesses ready to scale</p>
+                <ul class="pricing-features">
+                    <li>All Free features</li>
+                    <li>AI Profitability Predictions</li>
+                    <li>Market Forecasting</li>
+                    <li>Competitor Intelligence</li>
+                    <li>Inventory Management</li>
+                    <li>Waste Tracker</li>
+                    <li>AI Menu Suggestions</li>
+                    <li>Up to 5 locations</li>
+                    <li>Weekly Reports</li>
+                    <li>Priority Email Support</li>
+                </ul>
+                <button class="pricing-btn" onclick="handleUpgrade('premium')">Upgrade to Premium</button>
+            </div>
+
+            <div class="pricing-card">
+                <h3 class="pricing-plan-name">Enterprise</h3>
+                <div class="pricing-price">Custom</div>
+                <div class="pricing-period">Get in touch</div>
+                <p class="pricing-description">For large restaurant chains & organizations</p>
+                <ul class="pricing-features">
+                    <li>All Premium features</li>
+                    <li>Unlimited locations</li>
+                    <li>Custom integrations</li>
+                    <li>Real-time Analytics</li>
+                    <li>Advanced API Access</li>
+                    <li>Dedicated Account Manager</li>
+                    <li>24/7 Priority Support</li>
+                    <li>Custom Reports</li>
+                    <li>SLA Guarantee</li>
+                </ul>
+                <a href="mailto:contact@fbais.com" class="pricing-btn">Contact Sales</a>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <h2>Feature Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Features</th>
+                        <th>Free</th>
+                        <th>Premium</th>
+                        <th>Enterprise</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Location Intelligence</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Profitability Prediction</td>
+                        <td>-</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Market Forecasting</td>
+                        <td>-</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Competitor Intelligence</td>
+                        <td>-</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Inventory Management</td>
+                        <td>-</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Waste Tracker</td>
+                        <td>-</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>AI Menu Suggestions</td>
+                        <td>-</td>
+                        <td><span class="check-icon">✓</span></td>
+                        <td><span class="check-icon">✓</span></td>
+                    </tr>
+                    <tr>
+                        <td>Locations Allowed</td>
+                        <td>1</td>
+                        <td>5</td>
+                        <td>Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Reports</td>
+                        <td>Monthly</td>
+                        <td>Weekly</td>
+                        <td>Real-time & Custom</td>
+                    </tr>
+                    <tr>
+                        <td>API Access</td>
+                        <td>-</td>
+                        <td>Basic</td>
+                        <td>Advanced</td>
+                    </tr>
+                    <tr>
+                        <td>Support</td>
+                        <td>Email</td>
+                        <td>Priority Email</td>
+                        <td>24/7 Dedicated</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="faq-section">
+            <h2><i class="fas fa-question-circle"></i> Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Can I change my plan anytime?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! You can upgrade or downgrade your plan at any time. Changes will be reflected in your next billing cycle. If you upgrade mid-cycle, you'll be charged the prorated difference.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What payment methods do you accept?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    We accept all major credit cards, debit cards, and popular digital payment methods including UPI, net banking, and digital wallets. All transactions are secure and encrypted.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Is there a free trial for Premium?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! We offer a 14-day free trial for the Premium plan. No credit card required to start. If you don't upgrade, your trial period ends automatically with no charges.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What happens to my data if I cancel?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Your data is always yours. If you cancel, you can export all your data in multiple formats. We retain your account for 30 days in case you want to re-subscribe.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How many team members can I add?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Free plan allows 1 user. Premium plan includes up to 3 team members. Enterprise plans have unlimited team members with role-based access control.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Do you offer refunds?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    Yes! If you're not satisfied with your purchase within the first 7 days, we offer a full refund. No questions asked. Contact support@fbais.com for assistance.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            answer.classList.toggle('show');
+            
+            const icon = element.querySelector('i');
+            if (answer.classList.contains('show')) {
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        function handleUpgrade(plan) {
+            alert(`You are upgrading to ${plan.toUpperCase()} plan! This feature will be integrated with a payment gateway soon.`);
+        }
+    </script>
+</body>
+</html>

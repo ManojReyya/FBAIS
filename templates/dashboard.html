@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Business Intelligence Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(37, 99, 235, 0.03);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(37, 99, 235, 0.02);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        navbar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-logo:hover {
+            opacity: 0.8;
+        }
+
+        .navbar-logo i {
+            font-size: 2em;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-menu a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #2563eb;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .container {
+            padding: 40px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+            font-size: 0.9em;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        header {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 18px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 35px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.2s; }
+        .stat-card:nth-child(2) { animation-delay: 0.3s; }
+        .stat-card:nth-child(3) { animation-delay: 0.4s; }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.3);
+        }
+
+        .stat-card i {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .stat-card .value {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin: 15px 0;
+        }
+
+        .stat-card .label {
+            font-size: 0.95em;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 35px;
+            margin-bottom: 40px;
+        }
+
+        .module-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            animation: fadeInUp 0.8s ease-out both;
+            border-top: 5px solid #2563eb;
+        }
+
+        .module-card:nth-child(1) { animation-delay: 0.1s; }
+        .module-card:nth-child(2) { animation-delay: 0.2s; }
+        .module-card:nth-child(3) { animation-delay: 0.3s; }
+        .module-card:nth-child(4) { animation-delay: 0.4s; }
+        .module-card:nth-child(5) { animation-delay: 0.5s; }
+        .module-card:nth-child(6) { animation-delay: 0.6s; }
+        .module-card:nth-child(7) { animation-delay: 0.7s; }
+
+        .module-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-top-color: #3b82f6;
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 35px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .module-icon {
+            font-size: 2.8em;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .module-title {
+            font-size: 1.6em;
+            font-weight: 800;
+            line-height: 1.3;
+        }
+
+        .module-content {
+            padding: 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .module-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            flex-grow: 1;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .module-features {
+            list-style: none;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .module-features li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .module-features li:hover {
+            padding-left: 30px;
+            color: #2563eb;
+        }
+
+        .module-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .module-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.25);
+        }
+
+        .module-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+        }
+
+        .quick-links {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .quick-links h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 800;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-link-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.25);
+            font-size: 0.9em;
+        }
+
+        .quick-link-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(37, 99, 235, 0.3);
+        }
+
+        .quick-link-btn i {
+            font-size: 1.5em;
+        }
+
+        .section-title {
+            color: #0f172a;
+            font-size: 2.2em;
+            margin-bottom: 35px;
+            font-weight: 800;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        footer {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1f2937 100%);
+            color: #e5e7eb;
+            padding: 50px 40px;
+            border-radius: 12px;
+            margin-top: 80px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            color: white;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin: 8px 0;
+            color: #e5e7eb;
+        }
+
+        .footer-section ul li a {
+            color: #e5e7eb;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            color: #60a5fa;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+
+        footer p {
+            margin: 8px 0;
+            font-weight: 500;
+            color: #e5e7eb;
+        }
+
+        .footer-highlight {
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .navbar-content {
+                padding: 12px 30px;
+            }
+
+            .navbar-menu {
+                gap: 20px;
+            }
+
+            .modules-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                padding: 12px 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .navbar-logo {
+                font-size: 1.5em;
+            }
+
+            .navbar-menu {
+                display: none;
+            }
+
+            .navbar-user {
+                gap: 10px;
+            }
+
+            .logout-btn {
+                padding: 8px 15px;
+                font-size: 0.85em;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .module-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+
+            header {
+                padding: 30px 20px;
+            }
+
+            .quick-links {
+                padding: 25px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            footer {
+                padding: 30px 20px;
+                margin-top: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navbar>
+        <div class="navbar-content">
+            <a href="/" class="navbar-logo">
+                <i class="fas fa-chart-bar"></i>
+                FBAIS
+            </a>
+            <div class="navbar-menu">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/demand-forecast">Demand Forecast</a>
+                <a href="/profile">Profile</a>
+                <a href="/upgrade">Upgrade</a>
+                <a href="#help">Help & Support</a>
+            </div>
+            <div class="navbar-user">
+                <div class="navbar-user-avatar" id="navbarAvatar">U</div>
+                <a href="/profile" title="View Profile" style="text-decoration: none; color: #2563eb; font-weight: 600;">
+                    <i class="fas fa-user-circle"></i>
+                </a>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </navbar>
+
+    <div class="container">
+
+        <header>
+            <h1>🍽️ Food Business Intelligence System</h1>
+            <p class="subtitle">Comprehensive Analytics & Prediction Platform for Indian Food Business</p>
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <i class="fas fa-utensils"></i>
+                    <div class="value">8</div>
+                    <div class="label">Integrated Modules</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="value">Real-time</div>
+                    <div class="label">Data Analysis</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-brain"></i>
+                    <div class="value">ML Models</div>
+                    <div class="label">93-95% Accuracy</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="quick-links">
+            <h2>⚡ Quick Access</h2>
+            <div class="quick-links-grid">
+                <a href="/competitor-intelligence" class="quick-link-btn">
+                    <i class="fas fa-binoculars"></i> Competition
+                </a>
+                <a href="/customer-personas" class="quick-link-btn">
+                    <i class="fas fa-users"></i> Customers
+                </a>
+                <a href="/inventory-recipes" class="quick-link-btn">
+                    <i class="fas fa-book"></i> Recipes
+                </a>
+                <a href="/location-recommendations" class="quick-link-btn">
+                    <i class="fas fa-map"></i> Locations
+                </a>
+                <a href="/demand-forecast" class="quick-link-btn">
+                    <i class="fas fa-map-marker-alt"></i> Demand
+                </a>
+                <a href="/profitability-prediction" class="quick-link-btn">
+                    <i class="fas fa-dollar-sign"></i> Profit
+                </a>
+                <a href="/waste-tracker" class="quick-link-btn">
+                    <i class="fas fa-trash"></i> Waste
+                </a>
+                <a href="/ai-menu-suggestions" class="quick-link-btn">
+                    <i class="fas fa-robot"></i> AI Menu
+                </a>
+            </div>
+        </div>
+
+        <h2 class="section-title">📊 Available Modules</h2>
+
+        <div class="modules-grid">
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-binoculars"></i>
+                    </div>
+                    <div class="module-title">Competitor Intelligence</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Analyze competitive landscape with detailed market insights, ratings distribution, and profitability analysis across Indian cities.</p>
+                    <ul class="module-features">
+                        <li>Competitor mapping on interactive map</li>
+                        <li>Rating vs competitor analysis</li>
+                        <li>Profitability by type</li>
+                        <li>Cost analysis by city</li>
+                        <li>Cuisine distribution</li>
+                    </ul>
+                    <a href="/competitor-intelligence" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Explore Intelligence
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="module-title">Customer Personas</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Identify and analyze customer personas with peak times, preferences, pricing strategies, and marketing recommendations.</p>
+                    <ul class="module-features">
+                        <li>Persona identification</li>
+                        <li>Peak time analysis</li>
+                        <li>Product recommendations</li>
+                        <li>Price strategy guidance</li>
+                        <li>Marketing insights</li>
+                    </ul>
+                    <a href="/customer-personas" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Analyze Customers
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="module-title">Inventory & Recipes</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Browse Indian recipes, scale ingredients automatically, and manage inventory with preparation and cooking time estimates.</p>
+                    <ul class="module-features">
+                        <li>500+ Indian recipes</li>
+                        <li>Ingredient scaling</li>
+                        <li>Prep & cook time</li>
+                        <li>Cuisine filters</li>
+                        <li>Dietary preferences</li>
+                    </ul>
+                    <a href="/inventory-recipes" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Browse Recipes
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-map"></i>
+                    </div>
+                    <div class="module-title">Location Recommendations</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Get AI-powered location recommendations for your food business based on market viability and competition analysis.</p>
+                    <ul class="module-features">
+                        <li>Market viability scoring</li>
+                        <li>Competition analysis</li>
+                        <li>Population insights</li>
+                        <li>Tourism potential</li>
+                        <li>Growth forecasting</li>
+                    </ul>
+                    <a href="/location-recommendations" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Find Locations
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="module-title">Demand Forecasting</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Location-based demand analysis using Google Trends, population density, weather patterns, and footfall data for accurate market predictions.</p>
+                    <ul class="module-features">
+                        <li>Google Trends analysis</li>
+                        <li>Population density scoring</li>
+                        <li>Real-time weather impact</li>
+                        <li>Tourism & footfall estimation</li>
+                        <li>40+ Indian cities supported</li>
+                    </ul>
+                    <a href="/demand-forecast" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Analyze Demand
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="module-title">Profitability Prediction</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Predict restaurant profitability using ML models with 93-95% accuracy based on location, cuisine, and market factors.</p>
+                    <ul class="module-features">
+                        <li>93-95% accurate predictions</li>
+                        <li>Location-based scoring</li>
+                        <li>Profitability ranking</li>
+                        <li>Market statistics</li>
+                        <li>Cost analysis</li>
+                    </ul>
+                    <a href="/profitability-prediction" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Predict Profit
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <div class="module-title">Waste Tracker</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Track and analyze food waste with cost breakdown by category, identify patterns, and reduce operational losses.</p>
+                    <ul class="module-features">
+                        <li>Waste entry tracking</li>
+                        <li>Cost calculation</li>
+                        <li>Category analytics</li>
+                        <li>Daily breakdown</li>
+                        <li>Data export</li>
+                    </ul>
+                    <a href="/waste-tracker" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Track Waste
+                    </a>
+                </div>
+            </div>
+
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="module-title">AI Menu Suggestions</div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">Get AI-powered menu recommendations based on local preferences, trends, seasonal ingredients, and market analysis using Gemini AI.</p>
+                    <ul class="module-features">
+                        <li>AI-generated menus</li>
+                        <li>Location-based recommendations</li>
+                        <li>Seasonal considerations</li>
+                        <li>Profit margin analysis</li>
+                        <li>Local preference integration</li>
+                    </ul>
+                    <a href="/ai-menu-suggestions" class="module-link">
+                        <i class="fas fa-arrow-right"></i> Generate Menu
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <ul>
+                        <li><a href="/competitor-intelligence">Competitor Intelligence</a></li>
+                        <li><a href="/customer-personas">Customer Personas</a></li>
+                        <li><a href="/inventory-recipes">Inventory & Recipes</a></li>
+                        <li><a href="/location-recommendations">Location Insights</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a href="/demand-forecast">Demand Forecasting</a></li>
+                        <li><a href="/profitability-prediction">Profitability Analysis</a></li>
+                        <li><a href="/waste-tracker">Waste Tracker</a></li>
+                        <li><a href="/ai-menu-suggestions">AI Menu Suggestions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>FBAIS</h3>
+                    <ul>
+                        <li>Food Business Intelligence System</li>
+                        <li>Powered by ML & Analytics</li>
+                        <li>Made for Indian Restaurants</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Food Business Intelligence System (FBAIS). All rights reserved.</p>
+                <p>Powered by Flask, Plotly, Pandas, and Machine Learning | Version 1.0</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        function initializeUserInfo() {
+            const userName = sessionStorage.getItem('user_name') || 'User';
+            const userEmail = sessionStorage.getItem('user_email') || 'user@example.com';
+            const userInitial = userName.charAt(0).toUpperCase();
+            
+            const userAvatarElem = document.getElementById('userAvatar');
+            const navbarAvatarElem = document.getElementById('navbarAvatar');
+            
+            if (userAvatarElem) {
+                userAvatarElem.textContent = userInitial;
+            }
+            if (navbarAvatarElem) {
+                navbarAvatarElem.textContent = userInitial;
+            }
+            
+            const userNameElem = document.getElementById('userName');
+            const userEmailElem = document.getElementById('userEmail');
+            
+            if (userNameElem) {
+                userNameElem.textContent = userName;
+            }
+            if (userEmailElem) {
+                userEmailElem.textContent = userEmail;
+            }
+        }
+        
+        initializeUserInfo();
+
+        document.querySelectorAll('.module-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (e.target.closest('.module-link') || e.target.closest('a')) {
+                    return;
+                }
+                const link = this.querySelector('.module-link');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

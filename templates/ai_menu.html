@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Menu Suggestions - FBAIS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(37, 99, 235, 0.03);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(37, 99, 235, 0.02);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        navbar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-logo i {
+            font-size: 2em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-menu a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #2563eb;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+            font-size: 0.9em;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.8em;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #0f172a;
+            font-weight: 800;
+            animation: fadeInDown 0.8s ease-out;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: #4b5563;
+            font-size: 1.1em;
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .form-card {
+            background: white;
+            padding: 45px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            margin-bottom: 50px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .form-card h2 {
+            font-size: 1.8em;
+            color: #0f172a;
+            margin-bottom: 30px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            display: block;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 14px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(37, 99, 235, 0.2);
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading p {
+            font-size: 1.1em;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .results-section {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .overview-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 35px;
+        }
+
+        .overview-title h3 {
+            font-size: 1.8em;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .overview-title p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .popularity-box {
+            text-align: right;
+        }
+
+        .popularity-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .popularity-score {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #2563eb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .menu-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .category-card {
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out both;
+            border-top: 5px solid #2563eb;
+            transition: all 0.4s ease;
+        }
+
+        .category-card:nth-child(1) { animation-delay: 0.4s; }
+        .category-card:nth-child(2) { animation-delay: 0.5s; }
+        .category-card:nth-child(3) { animation-delay: 0.6s; }
+        .category-card:nth-child(4) { animation-delay: 0.7s; }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+            border-top-color: #3b82f6;
+        }
+
+        .category-title {
+            font-size: 1.5em;
+            color: #0f172a;
+            margin-bottom: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-icon {
+            font-size: 1.8em;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(37, 99, 235, 0.1);
+            color: #2563eb;
+        }
+
+        .menu-item {
+            background: #f8fafc;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #e0f2fe;
+            border-left-color: #2563eb;
+            transform: translateX(5px);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+
+        .item-name {
+            font-weight: 700;
+            color: #0f172a;
+            font-size: 1.05em;
+        }
+
+        .item-price {
+            font-weight: 800;
+            color: #2563eb;
+            font-size: 1.1em;
+        }
+
+        .item-description {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .item-badge {
+            display: inline-block;
+            font-size: 0.75em;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .insights-section {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out 0.8s both;
+        }
+
+        .insights-title {
+            font-size: 1.8em;
+            color: #0f172a;
+            margin-bottom: 30px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .insights-column h4 {
+            font-size: 1.2em;
+            color: #0f172a;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .insight-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.95em;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .insight-item:last-child {
+            border-bottom: none;
+        }
+
+        .insight-icon {
+            font-size: 1.3em;
+            color: #2563eb;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .no-results {
+            display: none;
+            text-align: center;
+            padding: 60px 40px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .no-results.show {
+            display: block;
+        }
+
+        .no-results-icon {
+            font-size: 4em;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .no-results h3 {
+            font-size: 1.5em;
+            color: #0f172a;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .no-results p {
+            color: #666;
+            font-size: 1.05em;
+        }
+
+        @media (max-width: 1024px) {
+            .navbar-content {
+                padding: 12px 30px;
+            }
+
+            .container {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .menu-categories {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                padding: 12px 20px;
+                flex-wrap: wrap;
+            }
+
+            .navbar-menu {
+                display: none;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .page-subtitle {
+                font-size: 1em;
+            }
+
+            .form-card {
+                padding: 25px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-categories {
+                grid-template-columns: 1fr;
+            }
+
+            .overview-card {
+                padding: 25px;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navbar>
+        <div class="navbar-content">
+            <a href="/dashboard" class="navbar-logo">
+                <i class="fas fa-chart-bar"></i>
+                FBAIS
+            </a>
+            <div class="navbar-menu">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/demand-forecast">Demand Forecast</a>
+                <a href="/profile">Profile</a>
+                <a href="/upgrade">Upgrade</a>
+            </div>
+            <div class="navbar-user">
+                <div class="navbar-user-avatar" id="navbarAvatar">U</div>
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </navbar>
+
+    <div class="container">
+        <h1><i class="fas fa-robot"></i> AI Menu Suggestions</h1>
+        <p class="page-subtitle">Get personalized menu recommendations based on local preferences, market trends, and seasonal ingredients for your location</p>
+
+        <div class="form-card">
+            <h2><i class="fas fa-cog"></i> Customize Your Menu</h2>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="locationSelect">Location</label>
+                    <select id="locationSelect">
+                        <option value="">Select city...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="businessType">Business Type</label>
+                    <select id="businessType">
+                        <option value="restaurant">Restaurant</option>
+                        <option value="cafe">Cafe</option>
+                        <option value="food_stall">Food Stall</option>
+                        <option value="food_truck">Food Truck</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="justify-content: flex-end;">
+                    <button id="generateBtn" class="btn btn-primary">
+                        <i class="fas fa-magic"></i> Generate Menu
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>AI is crafting your perfect menu...</p>
+        </div>
+
+        <div class="results-section" id="results">
+            <div class="overview-card">
+                <div class="overview-header">
+                    <div class="overview-title">
+                        <h3>Recommended Menu</h3>
+                        <p id="menuDescription"></p>
+                    </div>
+                    <div class="popularity-box">
+                        <div class="popularity-label">Expected Popularity</div>
+                        <div class="popularity-score" id="popularityScore">--</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalItems">--</div>
+                        <div class="stat-label">Menu Items</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgPrice">--</div>
+                        <div class="stat-label">Avg. Price (₹)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="profitMargin">--</div>
+                        <div class="stat-label">Est. Margin</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-categories">
+                <div class="category-card">
+                    <div class="category-title">
+                        <div class="category-icon"><i class="fas fa-utensils"></i></div>
+                        Appetizers & Starters
+                    </div>
+                    <div id="appetizersList"></div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-title">
+                        <div class="category-icon"><i class="fas fa-fire"></i></div>
+                        Main Courses
+                    </div>
+                    <div id="mainCoursesList"></div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-title">
+                        <div class="category-icon"><i class="fas fa-coffee"></i></div>
+                        Sides & Beverages
+                    </div>
+                    <div id="sidesBeveragesList"></div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-title">
+                        <div class="category-icon"><i class="fas fa-birthday-cake"></i></div>
+                        Desserts
+                    </div>
+                    <div id="dessertsList"></div>
+                </div>
+            </div>
+
+            <div class="insights-section">
+                <div class="insights-title">
+                    <i class="fas fa-lightbulb"></i> Menu Insights & Recommendations
+                </div>
+
+                <div class="insights-grid">
+                    <div class="insights-column">
+                        <h4>Why This Menu Works</h4>
+                        <div id="insightsList"></div>
+                    </div>
+
+                    <div class="insights-column">
+                        <h4>Seasonal Considerations</h4>
+                        <div id="seasonalList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="no-results" id="noResults">
+            <div class="no-results-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h3>No menu suggestions available</h3>
+            <p>Please select a location to generate menu recommendations.</p>
+        </div>
+    </div>
+
+    <script>
+        let indianData = {};
+
+        async function loadIndianData() {
+            try {
+                const response = await fetch('/api/cities');
+                const cities = await response.json();
+                
+                const locationSelect = document.getElementById('locationSelect');
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    locationSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading cities:', error);
+            }
+        }
+
+        document.getElementById('generateBtn').addEventListener('click', async function() {
+            const location = document.getElementById('locationSelect').value;
+            const businessType = document.getElementById('businessType').value;
+
+            if (!location) {
+                alert('Please select a location');
+                return;
+            }
+
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+            document.getElementById('noResults').classList.remove('show');
+
+            try {
+                const response = await fetch('/api/menu-suggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        location: location,
+                        businessType: businessType
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (!data) {
+                    throw new Error('Empty response from server');
+                }
+
+                if (data.error) {
+                    let errorMsg = data.error;
+                    if (data.details) {
+                        errorMsg += '\n\nDetails: ' + data.details;
+                    }
+                    if (data.trace) {
+                        console.error('Server trace:', data.trace);
+                    }
+                    alert(errorMsg);
+                    document.getElementById('loading').classList.remove('show');
+                    return;
+                }
+
+                if (data.menu) {
+                    const allItems = Object.values(data.menu).flat();
+                    const menuData = {
+                        description: `AI-curated menu for ${businessType} in ${location}`,
+                        popularityScore: data.popularityScore || 85,
+                        totalItems: allItems.length,
+                        avgPrice: Math.round(allItems.reduce((sum, item) => sum + (item.price || 0), 0) / allItems.length || 0),
+                        profitMargin: data.profitMargin || 65,
+                        appetizers: data.menu.appetizers || [],
+                        mainCourses: data.menu.main_courses || [],
+                        sidesBeverages: [...(data.menu.sides || []), ...(data.menu.beverages || [])],
+                        desserts: data.menu.desserts || [],
+                        insights: data.insights || [],
+                        seasonal: data.seasonal || []
+                    };
+                    displayMenu(menuData);
+                } else {
+                    document.getElementById('noResults').classList.add('show');
+                }
+
+                document.getElementById('loading').classList.remove('show');
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').classList.remove('show');
+                alert('Error generating menu suggestions: ' + error.message);
+            }
+        });
+
+        function displayMenu(menu) {
+            document.getElementById('menuDescription').textContent = menu.description;
+            document.getElementById('popularityScore').textContent = menu.popularityScore + '%';
+            document.getElementById('totalItems').textContent = menu.totalItems;
+            document.getElementById('avgPrice').textContent = menu.avgPrice;
+            document.getElementById('profitMargin').textContent = menu.profitMargin + '%';
+
+            displayCategoryItems('appetizersList', menu.appetizers);
+            displayCategoryItems('mainCoursesList', menu.mainCourses);
+            displayCategoryItems('sidesBeveragesList', menu.sidesBeverages);
+            displayCategoryItems('dessertsList', menu.desserts);
+
+            const insightsList = document.getElementById('insightsList');
+            insightsList.innerHTML = menu.insights.map(insight =>
+                `<div class="insight-item">
+                    <div class="insight-icon"><i class="fas fa-check-circle"></i></div>
+                    <div>${insight}</div>
+                </div>`
+            ).join('');
+
+            const seasonalList = document.getElementById('seasonalList');
+            seasonalList.innerHTML = menu.seasonal.map(tip =>
+                `<div class="insight-item">
+                    <div class="insight-icon"><i class="fas fa-calendar"></i></div>
+                    <div>${tip}</div>
+                </div>`
+            ).join('');
+
+            document.getElementById('results').classList.add('show');
+        }
+
+        function displayCategoryItems(containerId, items) {
+            const container = document.getElementById(containerId);
+            if (!items || items.length === 0) {
+                container.innerHTML = '<div style="color: #999; font-size: 0.9em; padding: 15px; text-align: center;">No items available</div>';
+                return;
+            }
+            container.innerHTML = items.map(item =>
+                `<div class="menu-item">
+                    <div class="item-header">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">₹${item.price || 0}</div>
+                    </div>
+                    <div class="item-description">${item.description || ''}</div>
+                    ${item.isLocal ? '<div class="item-badge"><i class="fas fa-leaf"></i> Local</div>' : ''}
+                </div>`
+            ).join('');
+        }
+
+        function initializeUserInfo() {
+            const userName = sessionStorage.getItem('user_name') || 'User';
+            const userInitial = userName.charAt(0).toUpperCase();
+            document.getElementById('navbarAvatar').textContent = userInitial;
+        }
+
+        loadIndianData();
+        initializeUserInfo();
+    </script>
+</body>
+</html>

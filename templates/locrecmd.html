@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Recommender</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(37, 99, 235, 0.03);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(37, 99, 235, 0.02);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        nav {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .navbar-logo i {
+            font-size: 2em;
+        }
+
+        .container {
+            padding: 40px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 18px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .form-section, .info-section {
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s ease;
+            border-top: 5px solid #2563eb;
+        }
+
+        .form-section:hover, .info-section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-top-color: #3b82f6;
+        }
+
+        h2 {
+            color: #2563eb;
+            font-size: 1.6em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        h2 i {
+            font-size: 1.4em;
+        }
+
+        label {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            display: block;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.95em;
+            background-color: #f9fafb;
+            color: #333;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #2563eb;
+            background-color: white;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #2563eb;
+            margin-bottom: 12px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .info-box li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.95em;
+            color: #333;
+        }
+
+        .info-box li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        #loading {
+            text-align: center;
+            padding: 60px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        #results {
+            position: relative;
+            z-index: 1;
+        }
+
+        .results-header {
+            margin-bottom: 35px;
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .results-header h3 {
+            color: #2563eb;
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+        }
+
+        .results-header h3 i {
+            font-size: 1.5em;
+        }
+
+        .results-header p {
+            color: #666;
+            font-size: 1.05em;
+            font-weight: 500;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .location-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s ease;
+            border-top: 5px solid #2563eb;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .location-card:nth-child(1) { animation-delay: 0.3s; }
+        .location-card:nth-child(2) { animation-delay: 0.4s; }
+        .location-card:nth-child(3) { animation-delay: 0.5s; }
+        .location-card:nth-child(4) { animation-delay: 0.6s; }
+        .location-card:nth-child(5) { animation-delay: 0.7s; }
+        .location-card:nth-child(6) { animation-delay: 0.8s; }
+
+        .location-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-top-color: #3b82f6;
+        }
+
+        .location-header {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .location-title {
+            flex: 1;
+        }
+
+        .location-title h3 {
+            font-size: 1.5em;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .location-title p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .score-display {
+            text-align: right;
+        }
+
+        .score-value {
+            font-size: 2.5em;
+            font-weight: 800;
+        }
+
+        .score-label {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        .location-content {
+            padding: 25px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.95em;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            color: #2563eb;
+            font-weight: 800;
+        }
+
+        .badges {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .badge {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 700;
+            display: inline-block;
+        }
+
+        .badge-excellent {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+            color: #059669;
+            border: 1px solid rgba(5, 150, 105, 0.3);
+        }
+
+        .badge-very-good {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(59, 130, 246, 0.15));
+            color: #2563eb;
+            border: 1px solid rgba(37, 99, 235, 0.3);
+        }
+
+        .badge-good {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+            color: #d97706;
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .badge-moderate {
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.15), rgba(124, 58, 255, 0.15));
+            color: #7c3aed;
+            border: 1px solid rgba(124, 58, 255, 0.3);
+        }
+
+        .badge-low {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .badge-medium {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(217, 119, 6, 0.15));
+            color: #d97706;
+            border: 1px solid rgba(217, 119, 6, 0.3);
+        }
+
+        .badge-high {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .reason-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(59, 130, 246, 0.05));
+            padding: 12px 15px;
+            border-radius: 10px;
+            border-left: 3px solid #2563eb;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .insight-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            transition: all 0.4s ease;
+            border-top: 5px solid #2563eb;
+        }
+
+        .insight-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            border-top-color: #3b82f6;
+        }
+
+        .insight-card h4 {
+            color: #2563eb;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+        }
+
+        .insight-card h4 i {
+            font-size: 1.3em;
+        }
+
+        .insight-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .insight-list li {
+            padding: 12px 0;
+            padding-left: 25px;
+            position: relative;
+            font-size: 0.95em;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .insight-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        #noResults, #error {
+            position: relative;
+            z-index: 1;
+        }
+
+        .empty-state {
+            background: white;
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #e5e7eb;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 1em;
+            color: #666;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            padding: 20px;
+            color: #991b1b;
+        }
+
+        .error-message h4 {
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .locations-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .locations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .location-header {
+                flex-direction: column;
+            }
+
+            .score-display {
+                text-align: left;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="navbar-content">
+            <div class="navbar-logo">
+                <i class="fas fa-map-pin"></i>
+                Location Recommender
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-map-pin"></i> Location Recommender</h1>
+            <p class="subtitle">Discover optimal locations for your food business across India using AI-powered market analysis</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="form-section">
+                <h2><i class="fas fa-search"></i> Find Best Locations</h2>
+                
+                <div>
+                    <label for="dishSelect">Select Your Signature Dish</label>
+                    <select id="dishSelect">
+                        <option value="">🍛 Choose a dish...</option>
+                    </select>
+                    <p class="help-text" style="margin-top: 8px; color: #666; font-size: 0.9em;">Popular Indian dishes from across all states</p>
+                </div>
+
+                <button id="searchBtn" class="btn">
+                    <i class="fas fa-rocket"></i>
+                    Get Recommendations
+                </button>
+            </div>
+
+            <div class="info-section">
+                <h2><i class="fas fa-lightbulb"></i> How It Works</h2>
+                <div class="info-box">
+                    <ul>
+                        <li><strong>Select a dish</strong> you want to serve</li>
+                        <li><strong>AI analyzes</strong> 28 Indian states</li>
+                        <li><strong>Get ranked</strong> recommendations</li>
+                        <li><strong>Compare</strong> market metrics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden">
+            <div class="spinner"></div>
+            <p style="font-size: 1.1em; color: #333; font-weight: 600; margin-top: 15px;">Analyzing locations...</p>
+            <p style="font-size: 0.95em; color: #666; margin-top: 8px;">Processing market data across all states</p>
+        </div>
+
+        <div id="results" class="hidden">
+            <div class="results-header">
+                <h3>
+                    <i class="fas fa-map"></i>
+                    <span id="resultsTitle">Recommended Locations</span>
+                </h3>
+                <p id="resultsSummary"></p>
+            </div>
+
+            <div id="locationsGrid" class="locations-grid">
+            </div>
+
+            <div class="insights-grid">
+                <div class="insight-card">
+                    <h4>
+                        <i class="fas fa-chart-line"></i>
+                        Market Opportunity
+                    </h4>
+                    <ul class="insight-list">
+                        <li><strong>High Demand:</strong> Established demand for your selected cuisine</li>
+                        <li><strong>Lower Competition:</strong> Strategic markets with manageable competition</li>
+                        <li><strong>Economic Growth:</strong> Strong per capita income and population</li>
+                        <li><strong>Tourism Potential:</strong> Higher foot traffic in tourist destinations</li>
+                    </ul>
+                </div>
+
+                <div class="insight-card">
+                    <h4>
+                        <i class="fas fa-exclamation-circle"></i>
+                        Key Considerations
+                    </h4>
+                    <ul class="insight-list">
+                        <li><strong>Seasonal Variations:</strong> Plan for regional demand patterns</li>
+                        <li><strong>Local Regulations:</strong> Verify food licenses and health permits</li>
+                        <li><strong>Supply Chain:</strong> Research ingredient availability</li>
+                        <li><strong>Workforce:</strong> Assess skilled labor availability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="noResults" class="hidden">
+            <div class="empty-state">
+                <i class="fas fa-map-pin"></i>
+                <h3>No recommendations found</h3>
+                <p>The selected dish isn't available in our database. Please try another cuisine.</p>
+            </div>
+        </div>
+
+        <div id="error" class="hidden">
+            <div class="error-message">
+                <h4><i class="fas fa-triangle-exclamation"></i> Error</h4>
+                <p id="errorMessage"></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>FoodAI Location Recommender • Data Source: Indian Census 2021 & Market Analysis</p>
+    </footer>
+
+    <script>
+
+        let indianData = {};
+
+        async function loadIndianData() {
+            try {
+                const response = await fetch('/api/all-dishes');
+                const data = await response.json();
+                
+                if (data.dishes) {
+                    const dishSelect = document.getElementById('dishSelect');
+                    data.dishes.forEach(dish => {
+                        const option = document.createElement('option');
+                        option.value = dish;
+                        option.textContent = '🍛 ' + dish;
+                        dishSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading dishes:', error);
+            }
+        }
+
+        function getViabilityBadgeClass(viability) {
+            const classes = {
+                'Excellent': 'badge-excellent',
+                'Very Good': 'badge-very-good',
+                'Good': 'badge-good',
+                'Moderate': 'badge-moderate'
+            };
+            return classes[viability] || 'badge-good';
+        }
+
+        function getCompetitionBadgeClass(competition) {
+            const classes = {
+                'Low': 'badge-excellent',
+                'Medium': 'badge-medium',
+                'High': 'badge-high'
+            };
+            return classes[competition] || 'badge-medium';
+        }
+
+        document.getElementById('searchBtn').addEventListener('click', async function() {
+            const selectedDish = document.getElementById('dishSelect').value;
+
+            if (!selectedDish) {
+                alert('Please select a dish');
+                return;
+            }
+
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('noResults').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
+
+            try {
+                const response = await fetch(`/api/locations?dish=${encodeURIComponent(selectedDish)}`);
+                const data = await response.json();
+
+                if (response.ok && data.locations && data.locations.length > 0) {
+                    displayResults(data.locations, selectedDish, data.total_matches);
+                } else if (data.error) {
+                    showError(data.error);
+                } else {
+                    document.getElementById('noResults').classList.remove('hidden');
+                }
+
+                document.getElementById('loading').classList.add('hidden');
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to fetch recommendations. Please try again.');
+                document.getElementById('loading').classList.add('hidden');
+            }
+        });
+
+        function showError(message) {
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function displayResults(recommendations, dish, totalMatches) {
+            const locationsGrid = document.getElementById('locationsGrid');
+            locationsGrid.innerHTML = '';
+
+            document.getElementById('resultsTitle').textContent = `Top Locations for ${dish}`;
+            document.getElementById('resultsSummary').textContent = `Found ${totalMatches} ideal location${totalMatches !== 1 ? 's' : ''} serving ${dish}`;
+
+            recommendations.slice(0, 6).forEach((rec, index) => {
+                const card = document.createElement('div');
+                card.className = 'location-card';
+                
+                const viabilityClass = getViabilityBadgeClass(rec.viability);
+                const competitionClass = getCompetitionBadgeClass(rec.competition);
+                
+                card.innerHTML = `
+                    <div class="location-header">
+                        <div class="location-title">
+                            <h3>${rec.capital}</h3>
+                            <p>${rec.state}</p>
+                        </div>
+                        <div class="score-display">
+                            <div class="score-value">${rec.score}%</div>
+                            <div class="score-label">Score</div>
+                        </div>
+                    </div>
+                    <div class="location-content">
+                        <div class="metric-row">
+                            <span class="metric-label">📊 Population</span>
+                            <span class="metric-value">${(rec.population / 1000000).toFixed(1)}M</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">🏙️ Density</span>
+                            <span class="metric-value">${rec.population_density}/km²</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">💰 Income</span>
+                            <span class="metric-value">₹${rec.income_level.toLocaleString()}</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">✈️ Tourism</span>
+                            <span class="metric-value">${rec.tourism_index}/10</span>
+                        </div>
+                        
+                        <div class="badges">
+                            <span class="badge ${competitionClass}">Competition: ${rec.competition}</span>
+                            <span class="badge ${viabilityClass}">Viability: ${rec.viability}</span>
+                        </div>
+                        
+                        <div class="reason-box">
+                            ${rec.reason}
+                        </div>
+                    </div>
+                `;
+                locationsGrid.appendChild(card);
+            });
+
+            document.getElementById('results').classList.remove('hidden');
+        }
+
+        loadIndianData();
+    </script>
+</body>
+</html>

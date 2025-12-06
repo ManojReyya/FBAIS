@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - FBAIS</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        navbar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-menu a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #2563eb;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+            font-size: 0.9em;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .profile-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .profile-card h2 {
+            font-size: 1.8em;
+            color: #0f172a;
+            margin-bottom: 25px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .profile-field {
+            margin-bottom: 20px;
+        }
+
+        .profile-field label {
+            display: block;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-field input,
+        .profile-field textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .profile-field input:focus,
+        .profile-field textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .profile-field input:disabled {
+            background: #f8fafc;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f7ff;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+        }
+
+        .btn-secondary:hover {
+            background: #e0f2fe;
+        }
+
+        .plan-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out 0.3s both;
+        }
+
+        .plan-card h2 {
+            font-size: 1.8em;
+            color: #0f172a;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .current-plan {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .current-plan .plan-name {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .current-plan .plan-price {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .current-plan .plan-period {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .plan-features li {
+            padding: 12px 0;
+            padding-left: 28px;
+            position: relative;
+            color: #475569;
+            font-size: 0.95em;
+        }
+
+        .plan-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .upgrade-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .success-message {
+            display: none;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 1024px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                padding: 12px 20px;
+                flex-wrap: wrap;
+            }
+
+            .navbar-menu {
+                display: none;
+            }
+
+            .container {
+                padding: 20px;
+            }
+
+            .profile-card,
+            .plan-card {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navbar>
+        <div class="navbar-content">
+            <a href="/dashboard" class="navbar-logo">
+                <i class="fas fa-chart-bar"></i>
+                FBAIS
+            </a>
+            <div class="navbar-menu">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/demand-forecast">Demand Forecast</a>
+                <a href="/profile">Profile</a>
+                <a href="/upgrade">Upgrade</a>
+            </div>
+            <div class="navbar-user">
+                <a href="/logout" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </navbar>
+
+    <div class="container">
+        <h1><i class="fas fa-user-circle"></i> User Profile</h1>
+        <p class="subtitle">Manage your account information and subscription</p>
+
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i> Profile updated successfully!
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="profile-container">
+            <div class="profile-card">
+                <h2><i class="fas fa-user"></i> Profile Information</h2>
+                <div class="profile-avatar" id="profileAvatar">U</div>
+
+                <div class="profile-field">
+                    <label for="userName">Full Name</label>
+                    <input type="text" id="userName" name="userName" placeholder="Enter your full name">
+                </div>
+
+                <div class="profile-field">
+                    <label for="userEmail">Email Address</label>
+                    <input type="email" id="userEmail" name="userEmail" placeholder="your.email@example.com" disabled>
+                </div>
+
+                <div class="profile-field">
+                    <label for="businessName">Business Name</label>
+                    <input type="text" id="businessName" name="businessName" placeholder="Your restaurant/business name">
+                </div>
+
+                <div class="profile-field">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="10-digit phone number">
+                </div>
+
+                <div class="profile-field">
+                    <label for="joinDate">Member Since</label>
+                    <input type="text" id="joinDate" name="joinDate" disabled>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="updateBtn" onclick="updateProfile()">
+                        <i class="fas fa-save"></i> Update Profile
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="plan-card">
+                <h2><i class="fas fa-crown"></i> Your Plan</h2>
+
+                <div class="current-plan">
+                    <div class="plan-name" id="planName">Free</div>
+                    <div class="plan-price" id="planPrice">₹0</div>
+                    <div class="plan-period" id="planPeriod">Forever free</div>
+                </div>
+
+                <ul class="plan-features" id="planFeatures">
+                    <li>Location Intelligence</li>
+                    <li>Customer Personas (Basic)</li>
+                    <li>Basic Dashboard</li>
+                    <li>Up to 1 location tracking</li>
+                    <li>Monthly Reports</li>
+                    <li>Email Support</li>
+                </ul>
+
+                <a href="/upgrade" class="upgrade-btn">
+                    <i class="fas fa-arrow-up"></i> Upgrade Plan
+                </a>
+
+                <div style="margin-top: 25px; padding-top: 25px; border-top: 1px solid #e5e7eb;">
+                    <p style="color: #666; font-size: 0.95em; margin-bottom: 10px;">
+                        <strong>Account Status:</strong> <span style="color: #2563eb; font-weight: 600;" id="accountStatus">Active</span>
+                    </p>
+                    <p style="color: #666; font-size: 0.95em;">
+                        <strong>Last Login:</strong> <span id="lastLogin">Today</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initializeProfile() {
+            const userName = sessionStorage.getItem('user_name') || 'User';
+            const userEmail = sessionStorage.getItem('user_email') || 'user@example.com';
+            const userInitial = userName.charAt(0).toUpperCase();
+            
+            document.getElementById('profileAvatar').textContent = userInitial;
+            document.getElementById('userName').value = userName;
+            document.getElementById('userEmail').value = userEmail;
+            document.getElementById('navbarAvatar').textContent = userInitial;
+
+            const today = new Date();
+            document.getElementById('joinDate').value = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        async function updateProfile() {
+            const name = document.getElementById('userName').value.trim();
+            const businessName = document.getElementById('businessName').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!name) {
+                showError('Please enter your name');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        business_name: businessName,
+                        phone: phone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    sessionStorage.setItem('user_name', name);
+                    const userInitial = name.charAt(0).toUpperCase();
+                    document.getElementById('profileAvatar').textContent = userInitial;
+                    showSuccess('Profile updated successfully!');
+                    setTimeout(() => {
+                        document.getElementById('successMessage').classList.remove('show');
+                    }, 3000);
+                } else {
+                    showError(data.error || 'Failed to update profile');
+                }
+            } catch (error) {
+                showError('An error occurred: ' + error.message);
+            }
+        }
+
+        function resetForm() {
+            const userName = sessionStorage.getItem('user_name') || 'User';
+            document.getElementById('userName').value = userName;
+            document.getElementById('businessName').value = '';
+            document.getElementById('phone').value = '';
+        }
+
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.classList.add('show');
+        }
+
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+            setTimeout(() => {
+                errorMsg.classList.remove('show');
+            }, 4000);
+        }
+
+        initializeProfile();
+    </script>
+</body>
+</html>

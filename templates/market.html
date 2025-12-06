@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Demand Forecaster - Food Demand Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #FF8C42 0%, #FF6B35 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header.header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
+            text-align: center;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        header h1 {
+            color: #FF6B35;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .left-panel, .right-panel {
+            position: relative;
+            z-index: 1;
+        }
+
+        section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.15);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.2);
+        }
+
+        section h2 {
+            color: #FF6B35;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        section h3 {
+            color: #FF6B35;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        section h4 {
+            color: #333;
+            font-size: 1em;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        select, input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #FF8C42;
+            border-radius: 6px;
+            font-size: 0.95em;
+            background-color: #f8fafc;
+            color: #333;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        select:focus, input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+            border-color: #FF6B35;
+            background-color: white;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FF8C42 0%, #FF6B35 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #FF6B35;
+            border: 2px solid #FF8C42;
+        }
+
+        .btn-secondary:hover {
+            background: #FFF0E6;
+        }
+
+        .factors-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .factors-list li {
+            padding: 8px 0;
+            color: #666;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .factors-list li:last-child {
+            border-bottom: none;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #FFF0E6 0%, #FFE5D9 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #FF6B35;
+            text-align: center;
+        }
+
+        .summary-card h4 {
+            color: #FF6B35;
+            margin-bottom: 8px;
+        }
+
+        .summary-card p {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .demand-factors {
+            margin-bottom: 20px;
+        }
+
+        .factor-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FF8C42;
+        }
+
+        .food-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .food-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #FF8C42;
+            color: #FF6B35;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .food-tag {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #FF8C42;
+            color: #FF6B35;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: inline-block;
+            margin: 4px;
+        }
+
+        .demand-pattern {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .demand-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #FF8C42;
+            font-size: 0.95em;
+        }
+
+        .demand-value {
+            font-weight: bold;
+            color: #FF6B35;
+        }
+
+        .ranking-item {
+            background: linear-gradient(135deg, #FFF0E6 0%, #FFE5D9 100%);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #FF6B35;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ranking-item-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .ranking-item-sources {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .ranking-item-score {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #FF6B35;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .forecast-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .time-slot {
+            background: linear-gradient(135deg, #FFF0E6 0%, #FFE5D9 100%);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #FF8C42;
+            text-align: center;
+        }
+
+        .time-slot-hour {
+            font-weight: bold;
+            color: #FF6B35;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .time-slot-foods {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .demand-ranking {
+            display: grid;
+            gap: 10px;
+        }
+
+        .rank-item {
+            background: linear-gradient(135deg, #FFF0E6 0%, #FFE5D9 100%);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #FF6B35;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #FF8C42;
+            border-top-color: #FF6B35;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc2626;
+        }
+
+        footer.footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            section {
+                padding: 15px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🍽️ Market Demand Forecaster</h1>
+            <p>Predict Food Demand Based on Multiple Factors</p>
+        </header>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <section class="input-section">
+                    <h2>⚙️ Forecast Parameters</h2>
+                    
+                    <div class="form-group">
+                        <label for="city">City (State Capital)</label>
+                        <select id="city">
+                            <optgroup label="Indian State Capitals">
+                                <option value="Amaravati" data-lat="16.5062" data-lon="80.6480">Amaravati (Andhra Pradesh)</option>
+                                <option value="Itanagar" data-lat="28.2180" data-lon="93.6054">Itanagar (Arunachal Pradesh)</option>
+                                <option value="Dispur" data-lat="26.1445" data-lon="91.7362">Dispur (Assam)</option>
+                                <option value="Patna" data-lat="25.5941" data-lon="85.1376">Patna (Bihar)</option>
+                                <option value="Raipur" data-lat="21.2514" data-lon="81.6296">Raipur (Chhattisgarh)</option>
+                                <option value="Panaji" data-lat="15.4909" data-lon="73.8278">Panaji (Goa)</option>
+                                <option value="Gandhinagar" data-lat="23.1815" data-lon="72.6369">Gandhinagar (Gujarat)</option>
+                                <option value="Chandigarh" data-lat="30.7333" data-lon="76.7794">Chandigarh (Haryana/Punjab)</option>
+                                <option value="Shimla" data-lat="31.7743" data-lon="77.1025">Shimla (Himachal Pradesh)</option>
+                                <option value="Ranchi" data-lat="23.3645" data-lon="85.3340">Ranchi (Jharkhand)</option>
+                                <option value="Bengaluru" data-lat="12.9716" data-lon="77.5946">Bengaluru (Karnataka)</option>
+                                <option value="Thiruvananthapuram" data-lat="8.5241" data-lon="76.9366">Thiruvananthapuram (Kerala)</option>
+                                <option value="Bhopal" data-lat="23.1815" data-lon="77.4063">Bhopal (Madhya Pradesh)</option>
+                                <option value="Mumbai" data-lat="19.0760" data-lon="72.8777">Mumbai (Maharashtra)</option>
+                                <option value="Imphal" data-lat="24.8170" data-lon="94.9042">Imphal (Manipur)</option>
+                                <option value="Shillong" data-lat="25.5788" data-lon="91.8933">Shillong (Meghalaya)</option>
+                                <option value="Aizawl" data-lat="23.8103" data-lon="92.7015">Aizawl (Mizoram)</option>
+                                <option value="Kohima" data-lat="25.6114" data-lon="94.1086">Kohima (Nagaland)</option>
+                                <option value="Bhubaneswar" data-lat="20.2961" data-lon="85.8245">Bhubaneswar (Odisha)</option>
+                                <option value="Jaipur" data-lat="26.9124" data-lon="75.7873">Jaipur (Rajasthan)</option>
+                                <option value="Gangtok" data-lat="27.5330" data-lon="88.6109">Gangtok (Sikkim)</option>
+                                <option value="Chennai" data-lat="13.0827" data-lon="80.2707">Chennai (Tamil Nadu)</option>
+                                <option value="Hyderabad" data-lat="17.3850" data-lon="78.4867">Hyderabad (Telangana)</option>
+                                <option value="Agartala" data-lat="23.8103" data-lon="91.2868">Agartala (Tripura)</option>
+                                <option value="Lucknow" data-lat="26.8467" data-lon="80.9462">Lucknow (Uttar Pradesh)</option>
+                                <option value="Dehradun" data-lat="30.1975" data-lon="78.1313">Dehradun (Uttarakhand)</option>
+                                <option value="Kolkata" data-lat="22.5726" data-lon="88.3639">Kolkata (West Bengal)</option>
+                                <option value="New Delhi" data-lat="28.7041" data-lon="77.1025">New Delhi (NCT of Delhi)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="region">Region</label>
+                        <select id="region">
+                            <option value="North India">North India</option>
+                            <option value="South India">South India</option>
+                            <option value="East India">East India</option>
+                            <option value="West India">West India</option>
+                            <option value="North East India">North East India</option>
+                            <option value="Central India">Central India</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="temperature">Temperature (°C)</label>
+                        <input type="number" id="temperature" value="25" min="-20" max="50">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="humidity">Humidity (%)</label>
+                        <input type="number" id="humidity" value="60" min="0" max="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weather">Weather Condition</label>
+                        <select id="weather">
+                            <option value="clear">Clear/Sunny</option>
+                            <option value="rainy">Rainy</option>
+                            <option value="cold">Cold</option>
+                            <option value="hot">Hot</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="getForecast()">Get Forecast</button>
+                        <button class="btn btn-secondary" onclick="fetchWeatherData()">Refresh Weather</button>
+                    </div>
+                </section>
+
+                <section class="info-section">
+                    <h3>📊 What We Analyze</h3>
+                    <ul class="factors-list">
+                        <li>🌡️ <strong>Weather-Based Demand</strong> - Temperature, humidity, conditions</li>
+                        <li>📅 <strong>Seasonal Patterns</strong> - Season-specific food preferences</li>
+                        <li>🎉 <strong>Festival Demand</strong> - Special occasions and festivals</li>
+                        <li>🗺️ <strong>Local Tastes</strong> - Regional food preferences</li>
+                        <li>⏰ <strong>Time-Based Demand</strong> - Office hours vs late-night</li>
+                        <li>📈 <strong>Weekend vs Weekday</strong> - Consumption patterns</li>
+                        <li>🔥 <strong>Google Trends</strong> - Current food popularity trends</li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="right-panel">
+                <section class="results-section" id="results" style="display: none;">
+                    <h2>📈 Forecast Results</h2>
+
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <h4>City</h4>
+                            <p id="result-city">-</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Region</h4>
+                            <p id="result-region">-</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Season</h4>
+                            <p id="result-season">-</p>
+                        </div>
+                        <div class="summary-card">
+                            <h4>Weather</h4>
+                            <p id="result-weather">-</p>
+                        </div>
+                    </div>
+
+                    <div class="demand-factors">
+                        <h3>🎯 Demand Factors</h3>
+
+                        <div class="factor-card">
+                            <h4>🌡️ Weather-Based Foods</h4>
+                            <div id="weather-foods" class="food-list"></div>
+                        </div>
+
+                        <div class="factor-card">
+                            <h4>🗺️ Local Taste Preferences</h4>
+                            <div id="local-foods" class="food-list"></div>
+                        </div>
+
+                        <div class="factor-card">
+                            <h4>📅 Seasonal Foods</h4>
+                            <div id="seasonal-foods" class="food-list"></div>
+                        </div>
+
+                        <div class="factor-card">
+                            <h4>⏰ Current Time Period Demand</h4>
+                            <div id="time-demand" class="demand-pattern"></div>
+                        </div>
+
+                        <div class="factor-card">
+                            <h4>📆 Day Pattern (Weekend/Weekday)</h4>
+                            <div id="day-demand" class="demand-pattern"></div>
+                        </div>
+                    </div>
+
+                    <div class="combined-forecast">
+                        <h3>🔝 Top Demanded Foods</h3>
+                        <div id="combined-demand" class="demand-ranking"></div>
+                    </div>
+                </section>
+
+                <section class="forecast-24h" id="forecast-24h" style="display: none;">
+                    <h2>📊 24-Hour Demand Forecast</h2>
+                    <div id="forecast-timeline" class="forecast-timeline"></div>
+                </section>
+
+                <section class="loading" id="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Generating forecast...</p>
+                </section>
+
+                <section class="error" id="error" style="display: none;">
+                    <p id="error-message"></p>
+                </section>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Market Demand Forecaster | Analyzing demand patterns with AI precision</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script1.js') }}"></script>
+</body>
+</html>

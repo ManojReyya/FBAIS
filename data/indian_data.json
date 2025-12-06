@@ -1,0 +1,244 @@
+{
+  "data_source": "Indian Census 2021 & Official Government Data",
+  "population_data_source": "Census 2021 - Ministry of Home Affairs, India",
+  "density_data_source": "Census 2021 - Persons per square kilometer",
+  "income_data_source": "Per Capita Income estimates based on state GDP",
+  "tourism_data_source": "Tourist arrivals and tourism index (0-10 scale)",
+  "cuisine_data_source": "Regional food culture research - authentic regional specialties",
+  "last_updated": "2024",
+  "note": "All population and population_density figures are based on official Census 2021 data",
+  "states": {
+    "Andhra Pradesh": {
+      "capital": "Amaravati",
+      "population": 49506799,
+      "population_density": 308,
+      "city_income_level": 32000,
+      "tourism_index": 4,
+      "top_dishes": ["Biryani", "Sambar", "Dosa", "Idli"]
+    },
+    "Arunachal Pradesh": {
+      "capital": "Itanagar",
+      "population": 1382611,
+      "population_density": 17,
+      "city_income_level": 28000,
+      "tourism_index": 6,
+      "top_dishes": ["Momos", "Thukpa", "Fried Rice"]
+    },
+    "Assam": {
+      "capital": "Dispur",
+      "population": 31195846,
+      "population_density": 397,
+      "city_income_level": 30000,
+      "tourism_index": 5,
+      "top_dishes": ["Assamese Rice", "Fish Curry", "Sambar"]
+    },
+    "Bihar": {
+      "capital": "Patna",
+      "population": 103804637,
+      "population_density": 1102,
+      "city_income_level": 25000,
+      "tourism_index": 3,
+      "top_dishes": ["Litti Chokha", "Biryani", "Samosa"]
+    },
+    "Chhattisgarh": {
+      "capital": "Raipur",
+      "population": 25545198,
+      "population_density": 189,
+      "city_income_level": 28000,
+      "tourism_index": 2,
+      "top_dishes": ["Chivda", "Sambar", "Biryani"]
+    },
+    "Goa": {
+      "capital": "Panaji",
+      "population": 1457723,
+      "population_density": 394,
+      "city_income_level": 45000,
+      "tourism_index": 9,
+      "top_dishes": ["Goan Fish Curry", "Bebinca", "Sorpotel"]
+    },
+    "Gujarat": {
+      "capital": "Gandhinagar",
+      "population": 60439692,
+      "population_density": 308,
+      "city_income_level": 38000,
+      "tourism_index": 4,
+      "top_dishes": ["Dhokla", "Fafda Jalebi", "Undhiyu"]
+    },
+    "Haryana": {
+      "capital": "Chandigarh",
+      "population": 25351462,
+      "population_density": 573,
+      "city_income_level": 42000,
+      "tourism_index": 5,
+      "top_dishes": ["Makki Di Roti", "Sarson Ka Saag", "Chole Bhature"]
+    },
+    "Himachal Pradesh": {
+      "capital": "Shimla",
+      "population": 6856509,
+      "population_density": 123,
+      "city_income_level": 35000,
+      "tourism_index": 8,
+      "top_dishes": ["Himachali Dham", "Chikhalwali", "Momos"]
+    },
+    "Jharkhand": {
+      "capital": "Ranchi",
+      "population": 32966134,
+      "population_density": 337,
+      "city_income_level": 28000,
+      "tourism_index": 3,
+      "top_dishes": ["Litti Chokha", "Biryani", "Rice"]
+    },
+    "Karnataka": {
+      "capital": "Bengaluru",
+      "population": 61130704,
+      "population_density": 319,
+      "city_income_level": 48000,
+      "tourism_index": 6,
+      "top_dishes": ["Dosa", "Idli", "Sambar", "Bisibelebath"]
+    },
+    "Kerala": {
+      "capital": "Thiruvananthapuram",
+      "population": 33387677,
+      "population_density": 859,
+      "city_income_level": 40000,
+      "tourism_index": 7,
+      "top_dishes": ["Puttu", "Appam", "Sambar"]
+    },
+    "Madhya Pradesh": {
+      "capital": "Bhopal",
+      "population": 72597565,
+      "population_density": 236,
+      "city_income_level": 29000,
+      "tourism_index": 4,
+      "top_dishes": ["Poha", "Jalebi", "Samosa"]
+    },
+    "Maharashtra": {
+      "capital": "Mumbai",
+      "population": 112374333,
+      "population_density": 365,
+      "city_income_level": 52000,
+      "tourism_index": 9,
+      "top_dishes": ["Pav Bhaji", "Vada Pav", "Biryani"]
+    },
+    "Manipur": {
+      "capital": "Imphal",
+      "population": 2721756,
+      "population_density": 128,
+      "city_income_level": 26000,
+      "tourism_index": 4,
+      "top_dishes": ["Manipuri Thali", "Fish Curry", "Rice"]
+    },
+    "Meghalaya": {
+      "capital": "Shillong",
+      "population": 2966889,
+      "population_density": 132,
+      "city_income_level": 30000,
+      "tourism_index": 6,
+      "top_dishes": ["Jadoh", "Dohneiiong", "Fish Curry"]
+    },
+    "Mizoram": {
+      "capital": "Aizawl",
+      "population": 1097206,
+      "population_density": 52,
+      "city_income_level": 29000,
+      "tourism_index": 5,
+      "top_dishes": ["Mizo Thali", "Fish Curry", "Rice"]
+    },
+    "Nagaland": {
+      "capital": "Kohima",
+      "population": 1978502,
+      "population_density": 119,
+      "city_income_level": 28000,
+      "tourism_index": 4,
+      "top_dishes": ["Naga Curry", "Fish", "Rice"]
+    },
+    "Odisha": {
+      "capital": "Bhubaneswar",
+      "population": 42000000,
+      "population_density": 269,
+      "city_income_level": 27000,
+      "tourism_index": 5,
+      "top_dishes": ["Biryani", "Sambar", "Dosa"]
+    },
+    "Punjab": {
+      "capital": "Chandigarh",
+      "population": 27704236,
+      "population_density": 551,
+      "city_income_level": 40000,
+      "tourism_index": 5,
+      "top_dishes": ["Butter Chicken", "Chole Bhature", "Makki Di Roti"]
+    },
+    "Rajasthan": {
+      "capital": "Jaipur",
+      "population": 68548437,
+      "population_density": 201,
+      "city_income_level": 33000,
+      "tourism_index": 8,
+      "top_dishes": ["Dal Baati Churma", "Gatte Ka Saag", "Samosa"]
+    },
+    "Sikkim": {
+      "capital": "Gangtok",
+      "population": 610577,
+      "population_density": 86,
+      "city_income_level": 38000,
+      "tourism_index": 7,
+      "top_dishes": ["Momos", "Thukpa", "Gundruk"]
+    },
+    "Tamil Nadu": {
+      "capital": "Chennai",
+      "population": 72147030,
+      "population_density": 555,
+      "city_income_level": 44000,
+      "tourism_index": 7,
+      "top_dishes": ["Dosa", "Idli", "Sambar", "Biryani"]
+    },
+    "Telangana": {
+      "capital": "Hyderabad",
+      "population": 35193978,
+      "population_density": 314,
+      "city_income_level": 43000,
+      "tourism_index": 6,
+      "top_dishes": ["Hyderabadi Biryani", "Haleem", "Nihari"]
+    },
+    "Tripura": {
+      "capital": "Agartala",
+      "population": 3673917,
+      "population_density": 305,
+      "city_income_level": 27000,
+      "tourism_index": 3,
+      "top_dishes": ["Chura Sabzi", "Fish Curry", "Rice"]
+    },
+    "Uttar Pradesh": {
+      "capital": "Lucknow",
+      "population": 199812341,
+      "population_density": 828,
+      "city_income_level": 28000,
+      "tourism_index": 5,
+      "top_dishes": ["Biryani", "Kebab", "Samosa"]
+    },
+    "Uttarakhand": {
+      "capital": "Dehradun",
+      "population": 10086292,
+      "population_density": 189,
+      "city_income_level": 36000,
+      "tourism_index": 7,
+      "top_dishes": ["Biryani", "Momos", "Samosa"]
+    },
+    "West Bengal": {
+      "capital": "Kolkata",
+      "population": 91276115,
+      "population_density": 1029,
+      "city_income_level": 35000,
+      "tourism_index": 6,
+      "top_dishes": ["Biryani", "Hilsa Fish", "Samosa"]
+    },
+    "Delhi": {
+      "capital": "Delhi",
+      "population": 16753235,
+      "population_density": 11297,
+      "city_income_level": 50000,
+      "tourism_index": 9,
+      "top_dishes": ["Butter Chicken", "Chole Bhature", "Biryani"]
+    }
+  }
+}

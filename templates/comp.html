@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitor Intelligence - FBAIS</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+            min-height: 100vh;
+            padding: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(37, 99, 235, 0.03);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            left: -5%;
+            width: 300px;
+            height: 300px;
+            background: rgba(37, 99, 235, 0.02);
+            border-radius: 50%;
+            animation: float 10s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        navbar {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            margin: 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #2563eb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .navbar-logo i {
+            font-size: 2em;
+        }
+
+        .navbar-menu {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .navbar-menu a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            color: #2563eb;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            padding: 40px 40px 40px;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        header {
+            background: white;
+            padding: 50px 40px;
+            border-radius: 18px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 35px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.2);
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.8s ease-out both;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.2s; }
+        .stat-card:nth-child(2) { animation-delay: 0.3s; }
+        .stat-card:nth-child(3) { animation-delay: 0.4s; }
+        .stat-card:nth-child(4) { animation-delay: 0.5s; }
+        .stat-card:nth-child(5) { animation-delay: 0.6s; }
+        .stat-card:nth-child(6) { animation-delay: 0.7s; }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.3);
+        }
+
+        .stat-card i {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .stat-value {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin: 15px 0;
+        }
+
+        .stat-label {
+            font-size: 0.95em;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 30px 40px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out 0.15s both;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .filter-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-title i {
+            color: #2563eb;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        select, input {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #333;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #2563eb;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(37, 99, 235, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95em;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        button.secondary {
+            background: white;
+            color: #2563eb;
+            border: 2px solid #2563eb;
+            box-shadow: none;
+        }
+
+        button.secondary:hover {
+            background: #f0f7ff;
+        }
+
+        .filter-results {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2563eb;
+            display: none;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .filter-results.show {
+            display: block;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .result-label {
+            font-size: 0.85em;
+            color: #2563eb;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .result-value {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: #333;
+            margin-top: 8px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 16px;
+            flex-wrap: wrap;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .tab-btn {
+            padding: 12px 28px;
+            background: #f3f4f6;
+            color: #666;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .tab-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+            background: #f0f7ff;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .overview-intro {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.1s both;
+        }
+
+        .intro-card {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            border-radius: 18px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            box-shadow: 0 15px 50px rgba(37, 99, 235, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .intro-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+        }
+
+        .intro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(37, 99, 235, 0.3);
+        }
+
+        .intro-icon {
+            font-size: 3.5em;
+            color: white;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .intro-content {
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .intro-content h2 {
+            font-size: 1.6em;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .intro-content p {
+            font-size: 1em;
+            opacity: 0.95;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+            gap: 28px;
+            margin-bottom: 35px;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        .chart-wrapper {
+            background: white;
+            border-radius: 18px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border-top: 5px solid #2563eb;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.2), transparent);
+        }
+
+        .chart-wrapper:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 25px 60px rgba(37, 99, 235, 0.15);
+            border-top-color: #3b82f6;
+        }
+
+        .chart-title {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            word-wrap: break-word;
+            white-space: normal;
+            line-height: 1.4;
+            min-height: 2.5em;
+        }
+
+        .chart-title i {
+            color: #2563eb;
+            font-size: 1.4em;
+            flex-shrink: 0;
+        }
+
+        .chart {
+            width: 100%;
+            height: 420px;
+            min-height: 420px;
+            max-height: 420px;
+            position: relative;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart > div {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        #chartIndiaMap {
+            height: 600px;
+            min-height: 600px;
+            max-height: 600px;
+        }
+
+        #chartIndiaMap > div {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 400px;
+            background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+            border-radius: 10px;
+            font-size: 14px;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        #chartIndiaMap.chart-loading {
+            min-height: 600px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #2563eb;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            padding: 30px 20px;
+            margin-top: 50px;
+            position: relative;
+            z-index: 1;
+            font-size: 0.95em;
+        }
+
+        footer p {
+            margin: 8px 0;
+        }
+
+        @media (max-width: 1200px) {
+            .charts-container {
+                grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .navbar-content {
+                padding: 15px 30px;
+            }
+
+            .container {
+                padding: 30px 30px 30px;
+            }
+
+            header {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 2.2em;
+            }
+
+            .filter-section {
+                padding: 25px 30px;
+            }
+
+            .intro-card {
+                padding: 30px;
+                gap: 20px;
+            }
+
+            .intro-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 3em;
+            }
+
+            .intro-content h2 {
+                font-size: 1.4em;
+            }
+
+            .intro-content p {
+                font-size: 0.95em;
+            }
+
+            .charts-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .chart-wrapper {
+                padding: 25px;
+                overflow: hidden;
+            }
+
+            .chart-title {
+                font-size: 1.05em;
+                margin-bottom: 20px;
+                min-height: 2.4em;
+            }
+
+            .chart {
+                height: 380px;
+                min-height: 380px;
+                max-height: 380px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            navbar {
+                position: relative;
+            }
+
+            .navbar-content {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .navbar-menu {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-value {
+                font-size: 1.8em;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-buttons {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .tabs {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .tab-btn {
+                width: 100%;
+            }
+
+            .overview-intro {
+                margin-bottom: 30px;
+            }
+
+            .intro-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 25px;
+                gap: 15px;
+            }
+
+            .intro-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 2.5em;
+            }
+
+            .intro-content h2 {
+                font-size: 1.3em;
+            }
+
+            .intro-content p {
+                font-size: 0.9em;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .chart-wrapper {
+                padding: 20px;
+                overflow: hidden;
+            }
+
+            .chart-title {
+                font-size: 1em;
+                margin-bottom: 18px;
+                min-height: 2.3em;
+            }
+
+            .chart {
+                height: 350px;
+                min-height: 350px;
+                max-height: 350px;
+            }
+
+            #chartIndiaMap {
+                height: 450px;
+                min-height: 450px;
+                max-height: 450px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar-logo {
+                font-size: 1.4em;
+            }
+
+            .navbar-content {
+                padding: 12px 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .container {
+                padding: 15px 12px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 1.5em;
+            }
+
+            .overview-intro {
+                margin-bottom: 20px;
+            }
+
+            .intro-card {
+                padding: 20px;
+                gap: 12px;
+            }
+
+            .intro-icon {
+                width: 65px;
+                height: 65px;
+                font-size: 2.2em;
+            }
+
+            .intro-content h2 {
+                font-size: 1.15em;
+            }
+
+            .intro-content p {
+                font-size: 0.85em;
+            }
+
+            .chart-title {
+                font-size: 0.95em;
+                margin-bottom: 15px;
+                min-height: 2.2em;
+                gap: 6px;
+            }
+
+            .chart-title i {
+                font-size: 1.2em;
+            }
+
+            .charts-container {
+                gap: 15px;
+            }
+
+            .chart-wrapper {
+                padding: 15px;
+                overflow: hidden;
+            }
+
+            .chart {
+                height: 320px;
+                min-height: 320px;
+                max-height: 320px;
+            }
+
+            #chartIndiaMap {
+                height: 380px;
+                min-height: 380px;
+                max-height: 380px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <navbar>
+        <div class="navbar-content">
+            <a href="/dashboard" class="navbar-logo">
+                <i class="fas fa-chart-line"></i>
+                FBAIS
+            </a>
+            <div class="navbar-menu">
+                <a href="/dashboard" aria-label="Dashboard">Dashboard</a>
+                <a href="/competitor-intelligence" aria-label="Competitor Intelligence">Competitor Intelligence</a>
+            </div>
+            <div class="navbar-user">
+                <div class="navbar-user-avatar" title="User Profile">U</div>
+                <a href="/logout" style="text-decoration: none; color: #2563eb; font-weight: 600;">Logout</a>
+            </div>
+        </div>
+    </navbar>
+
+    <div class="container">
+        <header>
+            <h1>📊 Competitor Intelligence</h1>
+            <p class="subtitle">Analyze market dynamics, competitor strategies, and locality performance</p>
+            
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <i class="fas fa-store"></i>
+                    <div class="stat-label">Total Establishments</div>
+                    <div class="stat-value" id="totalEstablishments">-</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div class="stat-label">Cities Covered</div>
+                    <div class="stat-value" id="totalCities">-</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-star"></i>
+                    <div class="stat-label">Average Rating</div>
+                    <div class="stat-value" id="avgRating">-</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-rupee-sign"></i>
+                    <div class="stat-label">Avg Cost per 2</div>
+                    <div class="stat-value" id="avgCost">-</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-chart-pie"></i>
+                    <div class="stat-label">Avg Profitability</div>
+                    <div class="stat-value" id="avgProfitability">-</div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-thumbs-up"></i>
+                    <div class="stat-label">Total Votes</div>
+                    <div class="stat-value" id="totalVotes">-</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="filter-section">
+            <div class="filter-title">
+                <i class="fas fa-filter"></i>
+                Advanced Filters
+            </div>
+            
+            <div class="filters">
+                <select id="cityFilter" aria-label="Select city">
+                    <option value="">All Cities</option>
+                </select>
+                <select id="typeFilter" aria-label="Select establishment type">
+                    <option value="">All Establishment Types</option>
+                </select>
+                <input type="number" id="minRating" placeholder="Min Rating (0-5)" min="0" max="5" step="0.1" aria-label="Minimum rating">
+                <input type="number" id="maxCost" placeholder="Max Cost" min="0" aria-label="Maximum cost">
+            </div>
+
+            <div class="filter-buttons">
+                <button onclick="applyFilters()" title="Apply selected filters">
+                    <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <button class="secondary" onclick="resetFilters()" title="Clear all filters">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+
+            <div class="filter-results" id="filterResults">
+                <div class="results-grid" id="resultsGrid"></div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')" title="View market overview">
+                <i class="fas fa-th-large"></i> Overview
+            </button>
+            <button class="tab-btn" onclick="switchTab('analysis')" title="Deep dive analysis">
+                <i class="fas fa-microscope"></i> Deep Dive
+            </button>
+            <button class="tab-btn" onclick="switchTab('heatmaps')" title="Geographic heatmaps">
+                <i class="fas fa-map"></i> Geographic
+            </button>
+        </div>
+
+        <div id="overview" class="tab-content active">
+            <div class="overview-intro">
+                <div class="intro-card">
+                    <div class="intro-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="intro-content">
+                        <h2>Market Overview Dashboard</h2>
+                        <p>Comprehensive market analysis across 28 Indian cities with 50,000+ establishments</p>
+                    </div>
+                </div>
+            </div>
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        <i class="fas fa-layer-group"></i>
+                        Establishment Types Distribution
+                    </div>
+                    <div id="chartEstablishmentTypes" class="chart"></div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        <i class="fas fa-globe"></i>
+                        City Distribution
+                    </div>
+                    <div id="chartCities" class="chart"></div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        <i class="fas fa-star"></i>
+                        Rating Distribution
+                    </div>
+                    <div id="chartRating" class="chart"></div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Profitability by Type
+                    </div>
+                    <div id="chartProfit" class="chart"></div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        <i class="fas fa-rupee-sign"></i>
+                        Average Cost by City
+                    </div>
+                    <div id="chartCost" class="chart"></div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        <i class="fas fa-utensils"></i>
+                        Top Cuisines
+                    </div>
+                    <div id="chartCuisine" class="chart"></div>
+                </div>
+                <div class="chart-wrapper full-width">
+                    <div class="chart-title">
+                        <i class="fas fa-scatter"></i>
+                        Rating vs Competitor Analysis
+                    </div>
+                    <div id="chartRatingVsComp" class="chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analysis" class="tab-content">
+            <div class="charts-container">
+                <div class="chart-wrapper full-width">
+                    <div class="chart-title">
+                        <i class="fas fa-binoculars"></i>
+                        City-wise Performance Analysis
+                    </div>
+                    <div id="chartAnalysis" class="chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="heatmaps" class="tab-content">
+            <div class="charts-container">
+                <div class="chart-wrapper full-width">
+                    <div class="chart-title">
+                        <i class="fas fa-map-marked-alt"></i>
+                        Geographic Performance Heatmap
+                    </div>
+                    <p style="font-size: 0.85em; color: #666; margin-bottom: 15px; text-align: center;">
+                        <span style="color: #dc2626; font-weight: 600;">● Red:</span> Poor (< 3.0) | 
+                        <span style="color: #f59e0b; font-weight: 600;">● Yellow:</span> Good (3.0-3.8) | 
+                        <span style="color: #10b981; font-weight: 600;">● Green:</span> Excellent (> 3.8)
+                    </p>
+                    <div id="chartIndiaMap" class="chart"></div>
+                </div>
+                <div class="chart-wrapper full-width">
+                    <div class="chart-title">
+                        <i class="fas fa-th"></i>
+                        Rating Heatmap: Type vs City
+                    </div>
+                    <div id="chartHeatmapRating" class="chart"></div>
+                </div>
+                <div class="chart-wrapper full-width">
+                    <div class="chart-title">
+                        <i class="fas fa-th"></i>
+                        Competitor Density Heatmap
+                    </div>
+                    <div id="chartHeatmapCompetitors" class="chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Competitor Intelligence Dashboard</strong> | Food Business Intelligence System</p>
+            <p>© 2024 FBAIS | Real-time Market Analysis & Competitor Tracking</p>
+        </footer>
+    </div>
+
+    <script>
+        let chartsData = {};
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function loadCharts() {
+            try {
+                const response = await fetch('/api/charts');
+                const data = await response.json();
+                
+                chartsData = data.charts;
+                
+                Plotly.newPlot('chartEstablishmentTypes', JSON.parse(chartsData.establishment_types_pie).data, JSON.parse(chartsData.establishment_types_pie).layout, {responsive: true});
+                Plotly.newPlot('chartCities', JSON.parse(chartsData.cities_pie).data, JSON.parse(chartsData.cities_pie).layout, {responsive: true});
+                Plotly.newPlot('chartRating', JSON.parse(chartsData.rating_bar).data, JSON.parse(chartsData.rating_bar).layout, {responsive: true});
+                Plotly.newPlot('chartProfit', JSON.parse(chartsData.profit_by_type).data, JSON.parse(chartsData.profit_by_type).layout, {responsive: true});
+                Plotly.newPlot('chartCost', JSON.parse(chartsData.cost_by_city).data, JSON.parse(chartsData.cost_by_city).layout, {responsive: true});
+                Plotly.newPlot('chartCuisine', JSON.parse(chartsData.cuisine_dist).data, JSON.parse(chartsData.cuisine_dist).layout, {responsive: true});
+                Plotly.newPlot('chartRatingVsComp', JSON.parse(chartsData.rating_vs_competitors).data, JSON.parse(chartsData.rating_vs_competitors).layout, {responsive: true});
+                Plotly.newPlot('chartHeatmapRating', JSON.parse(chartsData.heatmap_rating).data, JSON.parse(chartsData.heatmap_rating).layout, {responsive: true});
+                Plotly.newPlot('chartHeatmapCompetitors', JSON.parse(chartsData.heatmap_competitors).data, JSON.parse(chartsData.heatmap_competitors).layout, {responsive: true});
+                
+                loadIndiaMap({});
+                updateStats(data.stats);
+                loadFilters();
+                await loadDetailedAnalysis('');
+            } catch (error) {
+                console.error('Error loading charts:', error);
+                alert('Error loading data. Please try again.');
+            }
+        }
+
+        async function loadIndiaMap(filters) {
+            const mapContainer = document.getElementById('chartIndiaMap');
+            try {
+                mapContainer.innerHTML = '<div class="chart-loading">⏳ Loading India Map...</div>';
+                mapContainer.classList.add('chart-loading');
+                
+                console.log('Loading India map with filters:', filters);
+                
+                const response = await fetch('/api/india-map', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(filters || {})
+                });
+                
+                console.log('Map response status:', response.status);
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Map data received');
+                
+                if (data.error) {
+                    mapContainer.innerHTML = `<div class="chart-loading">⚠️ Error: ${data.error}</div>`;
+                    console.error('Map API Error:', data.error);
+                    return;
+                }
+                
+                if (!data.map) {
+                    mapContainer.innerHTML = '<div class="chart-loading">⚠️ No map data received</div>';
+                    console.warn('No map data in response');
+                    return;
+                }
+                
+                mapContainer.classList.remove('chart-loading');
+                mapContainer.innerHTML = '';
+                
+                try {
+                    const mapChart = JSON.parse(data.map);
+                    Plotly.newPlot('chartIndiaMap', mapChart.data, mapChart.layout, {responsive: true});
+                    console.log('India map rendered successfully');
+                } catch (parseError) {
+                    console.error('Error parsing map Plotly data:', parseError);
+                    mapContainer.innerHTML = '<div class="chart-loading">⚠️ Error rendering map chart</div>';
+                }
+            } catch (error) {
+                console.error('Map loading error:', error);
+                mapContainer.innerHTML = `<div class="chart-loading">⚠️ ${error.message || 'Failed to load map'}</div>`;
+                mapContainer.classList.remove('chart-loading');
+            }
+        }
+
+        function updateStats(stats) {
+            document.getElementById('totalEstablishments').textContent = stats.total_establishments.toLocaleString();
+            document.getElementById('totalCities').textContent = stats.total_cities;
+            document.getElementById('avgRating').textContent = stats.avg_rating.toFixed(2);
+            document.getElementById('avgCost').textContent = '₹' + stats.avg_cost.toLocaleString('en-IN', {maximumFractionDigits: 0});
+            document.getElementById('avgProfitability').textContent = stats.avg_profitability.toFixed(2);
+            document.getElementById('totalVotes').textContent = (stats.total_votes / 1000).toFixed(0) + 'K';
+        }
+
+        async function loadFilters() {
+            try {
+                const [citiesRes, typesRes] = await Promise.all([
+                    fetch('/api/cities'),
+                    fetch('/api/establishment-types')
+                ]);
+                
+                const cities = await citiesRes.json();
+                const types = await typesRes.json();
+                
+                const citySelect = document.getElementById('cityFilter');
+                const typeSelect = document.getElementById('typeFilter');
+                
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    citySelect.appendChild(option);
+                });
+                
+                types.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    typeSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading filters:', error);
+            }
+        }
+
+        async function applyFilters() {
+            try {
+                const filters = {
+                    city: document.getElementById('cityFilter').value,
+                    establishment_type: document.getElementById('typeFilter').value,
+                    min_rating: parseFloat(document.getElementById('minRating').value) || 0,
+                    max_cost: parseFloat(document.getElementById('maxCost').value) || 100000
+                };
+                
+                const response = await fetch('/api/filter-data', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(filters)
+                });
+                
+                const results = await response.json();
+                displayFilterResults(results);
+                await loadIndiaMap(filters);
+                
+                if (filters.city) {
+                    await loadDetailedAnalysis(filters.city);
+                }
+            } catch (error) {
+                console.error('Error applying filters:', error);
+            }
+        }
+
+        function displayFilterResults(results) {
+            const resultsContainer = document.getElementById('filterResults');
+            const resultsGrid = document.getElementById('resultsGrid');
+            
+            resultsGrid.innerHTML = `
+                <div class="result-item">
+                    <div class="result-label">Matching Results</div>
+                    <div class="result-value">${results.count}</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Avg Rating</div>
+                    <div class="result-value">${isNaN(results.avg_rating) ? 'N/A' : results.avg_rating.toFixed(2)}</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Avg Cost</div>
+                    <div class="result-value">₹${isNaN(results.avg_cost) ? 'N/A' : results.avg_cost.toLocaleString('en-IN', {maximumFractionDigits: 0})}</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Avg Competitors</div>
+                    <div class="result-value">${isNaN(results.avg_competitors) ? 'N/A' : results.avg_competitors.toFixed(1)}</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Avg Profitability</div>
+                    <div class="result-value">${isNaN(results.avg_profitability) ? 'N/A' : results.avg_profitability.toFixed(2)}</div>
+                </div>
+            `;
+            
+            resultsContainer.classList.add('show');
+        }
+
+        async function loadDetailedAnalysis(city) {
+            try {
+                const analysisChart = document.getElementById('chartAnalysis');
+                let url = '/api/detailed-analysis';
+                if (city) {
+                    url += `?city=${encodeURIComponent(city)}`;
+                }
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error(`Analysis API error: ${response.status}`);
+                    analysisChart.innerHTML = '<div style="padding: 20px; color: red;">Error loading analysis</div>';
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    console.error('Analysis error:', data.error);
+                    analysisChart.innerHTML = `<div style="padding: 20px; color: red;">Error: ${data.error}</div>`;
+                    return;
+                }
+                
+                if (!data.rating_by_type) {
+                    console.error('No chart data received');
+                    analysisChart.innerHTML = '<div style="padding: 20px; color: red;">No data available</div>';
+                    return;
+                }
+                
+                const chart = JSON.parse(data.rating_by_type);
+                Plotly.newPlot('chartAnalysis', chart.data, chart.layout, {responsive: true});
+                console.log('Detailed analysis loaded successfully');
+            } catch (error) {
+                console.error('Error loading detailed analysis:', error);
+                document.getElementById('chartAnalysis').innerHTML = `<div style="padding: 20px; color: red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function resetFilters() {
+            document.getElementById('cityFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('minRating').value = '';
+            document.getElementById('maxCost').value = '';
+            document.getElementById('filterResults').classList.remove('show');
+            await loadCharts();
+        }
+
+        window.addEventListener('load', loadCharts);
+        window.addEventListener('resize', () => {
+            Plotly.Plots.resize('chartEstablishmentTypes');
+            Plotly.Plots.resize('chartCities');
+            Plotly.Plots.resize('chartRating');
+            Plotly.Plots.resize('chartProfit');
+            Plotly.Plots.resize('chartCost');
+            Plotly.Plots.resize('chartCuisine');
+            Plotly.Plots.resize('chartRatingVsComp');
+            Plotly.Plots.resize('chartIndiaMap');
+            Plotly.Plots.resize('chartHeatmapRating');
+            Plotly.Plots.resize('chartHeatmapCompetitors');
+        });
+    </script>
+</body>
+</html>
